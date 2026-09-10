@@ -1,0 +1,28 @@
+export const colors = {
+  brandAmber: "#FFBF00",
+  brandCream: "#FFF5D1",
+  brandGray: "#777777",
+  brandWhite: "#FFFFFF",
+  background: "#FFFFFF",
+  foreground: "#1A1A1A",
+  primary: "#FFBF00",
+  primaryForeground: "#1A1A1A",
+  secondary: "#FFF5D1",
+  secondaryForeground: "#1A1A1A",
+  muted: "#FFF5D1",
+  mutedForeground: "#777777",
+  accent: "#FFF5D1",
+  accentForeground: "#1A1A1A",
+  destructive: "#DC2626",
+  border: "#E8E0C8",
+  input: "#E8E0C8",
+  ring: "#FFBF00",
+  card: "#FFFFFF",
+  cardForeground: "#1A1A1A",
+  productCard: "#FFECB3",
+  imagePlaceholder: "#F5F5F5",
+  success: "#16A34A",
+  overlay: "rgba(26, 26, 26, 0.45)",
+} as const;
+
+export type ColorToken = keyof typeof colors;

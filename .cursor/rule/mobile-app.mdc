@@ -1,0 +1,800 @@
+---
+description: Production-grade cross-platform e-commerce mobile application development rules
+globs:
+  - "**/*.{ts,tsx,js,jsx}"
+  - "app/**/*"
+  - "src/**/*"
+
+alwaysApply: true
+---
+
+
+# E-Commerce Mobile App — Development Rules
+
+## 1. Core Objective
+
+Build a production-grade, scalable, maintainable e-commerce mobile application for both:
+
+- iOS
+- Android
+
+The existing Next.js web application is the primary source of truth for:
+
+- Brand identity
+- Colors
+- Typography
+- Spacing
+- Components
+- Product behavior
+- Business logic
+- API contracts
+- Authentication
+- Cart behavior
+- Checkout behavior
+- Orders
+- User/account functionality
+
+Do NOT blindly copy the web UI.
+
+The mobile application must provide a native mobile UX optimized for touch interaction, small screens, performance, accessibility, and platform conventions.
+
+---
+
+## 2. Technology
+
+Use:
+
+- React Native
+- Expo
+- TypeScript
+- Expo Router
+- React Query / TanStack Query for server state
+- Zustand or an equivalent lightweight state manager for client state
+- React Hook Form for complex forms
+- Zod for validation
+
+Prefer stable, well-maintained libraries.
+
+Do not introduce a dependency unless it provides clear value.
+
+Before adding a new package, verify that the functionality cannot reasonably be implemented using existing dependencies or React Native/Expo APIs.
+
+---
+
+## 3. Web Version Is the Design Source of Truth
+
+Before implementing a feature:
+
+1. Inspect the existing Next.js implementation.
+2. Identify the existing:
+   - Colors
+   - Typography
+   - Spacing
+   - Border radius
+   - Shadows
+   - Icons
+   - Buttons
+   - Cards
+   - Navigation
+   - Product components
+   - Empty states
+   - Loading states
+   - Error states
+3. Reuse the same visual language in the mobile application.
+
+Maintain strong visual consistency with the web application.
+
+Do not invent a completely different branding system.
+
+Mobile-specific adaptations are allowed when necessary for usability.
+
+---
+
+## 4. Design System
+
+Create a centralized design system.
+
+Do NOT hardcode colors, spacing, typography, or dimensions throughout components.
+
+Use centralized tokens for:
+
+- Colors
+- Typography
+- Font sizes
+- Font weights
+- Spacing
+- Border radius
+- Shadows
+- Elevation
+- Component sizes
+- Z-index/layers
+
+Example:
+
+theme/
+  colors.ts
+  typography.ts
+  spacing.ts
+  radius.ts
+  shadows.ts
+  index.ts
+
+Every reusable component should consume these tokens.
+
+If the web application has existing design tokens, map them into the mobile design system.
+
+---
+
+## 5. Responsive Design
+
+The application must work correctly across:
+
+- Small Android phones
+- Large Android phones
+- Small iPhones
+- Large iPhones
+- Devices with notches
+- Devices with Dynamic Island
+- Different screen densities
+- Portrait orientation
+
+Use responsive layouts rather than fixed dimensions.
+
+Avoid hardcoded widths/heights unless absolutely necessary.
+
+Always consider:
+
+- Safe areas
+- Keyboard
+- Bottom navigation
+- Status bar
+- Home indicator
+- Dynamic Island/notches
+- Different aspect ratios
+
+---
+
+## 6. Platform Compatibility
+
+The application must work correctly on:
+
+- Android
+- iOS
+
+Avoid platform-specific behavior unless required.
+
+When platform-specific implementation is required, isolate it cleanly.
+
+Use:
+
+Platform.OS
+
+or:
+
+*.ios.ts / *.android.ts
+
+when appropriate.
+
+Do not allow Android-specific fixes to break iOS and vice versa.
+
+---
+
+## 7. Architecture
+
+Use a scalable feature-oriented architecture.
+
+Prefer:
+
+src/
+  components/
+  features/
+    auth/
+    home/
+    products/
+    cart/
+    checkout/
+    orders/
+    profile/
+    search/
+    wishlist/
+  hooks/
+  services/
+  store/
+  api/
+  utils/
+  constants/
+  theme/
+  types/
+
+Keep business logic out of UI components.
+
+Components should remain small, reusable, and testable.
+
+Avoid giant screen components.
+
+---
+
+## 8. API Integration
+
+Reuse the existing backend/API wherever possible.
+
+Do NOT duplicate backend business logic inside the mobile application.
+
+The mobile app should consume the same backend services as the web application unless there is a documented reason to create a mobile-specific endpoint.
+
+Centralize API communication.
+
+Use:
+
+- Request/response types
+- Proper error handling
+- Authentication handling
+- Request cancellation where appropriate
+- Query caching
+- Pagination
+- Retry policies where appropriate
+
+Never expose secrets or private API credentials inside the mobile application.
+
+Environment variables must be used for public configuration values.
+
+---
+
+## 9. Authentication
+
+Implement authentication securely.
+
+Handle:
+
+- Login
+- Signup
+- Logout
+- Token/session persistence
+- Token refresh
+- Expired sessions
+- Unauthorized API responses
+- Password reset
+- Email/phone verification if supported
+
+Never store sensitive credentials in plain AsyncStorage.
+
+Use secure platform storage such as Expo SecureStore where appropriate.
+
+Authentication state must survive application restarts.
+
+---
+
+## 10. State Management
+
+Clearly separate:
+
+### Server state
+
+Use TanStack Query for:
+
+- Products
+- Categories
+- Product details
+- User data
+- Orders
+- Reviews
+- Wishlist
+- Inventory
+- Recommendations
+
+### Client state
+
+Use Zustand or equivalent for:
+
+- Cart UI state
+- Filters
+- UI preferences
+- Temporary checkout state
+- Other local application state
+
+Do not put all application state into one global store.
+
+Avoid unnecessary global state.
+
+---
+
+## 11. Product Experience
+
+Product screens must support the existing web functionality where applicable.
+
+Consider:
+
+- Product images
+- Image galleries
+- Product variants
+- Sizes
+- Colors
+- Quantity
+- Pricing
+- Discounts
+- Availability
+- Reviews
+- Product descriptions
+- Specifications
+- Wishlist
+- Add to cart
+- Buy now
+- Related products
+
+Images must be optimized for mobile.
+
+Use appropriate image caching and loading strategies.
+
+Never block the entire screen unnecessarily while an individual section is loading.
+
+---
+
+## 12. Cart
+
+Cart behavior must be consistent with the web application.
+
+Handle:
+
+- Add item
+- Remove item
+- Increase quantity
+- Decrease quantity
+- Variant changes
+- Out-of-stock products
+- Price changes
+- Quantity limits
+- Cart synchronization
+- Empty cart
+- Loading states
+- API failures
+
+Prevent duplicate cart actions caused by rapid tapping.
+
+Show appropriate feedback after important cart operations.
+
+---
+
+## 13. Checkout
+
+Checkout must be treated as a critical production flow.
+
+Handle:
+
+- Address
+- Shipping
+- Delivery options
+- Coupons
+- Taxes
+- Discounts
+- Payment
+- Order review
+- Order creation
+- Payment failures
+- Network failures
+- Retry behavior
+
+Never assume payment/order creation succeeded merely because the request was sent.
+
+Always verify the final server state.
+
+Prevent duplicate order creation caused by repeated taps.
+
+Use loading/disabled states for critical actions.
+
+---
+
+## 14. Navigation
+
+Use Expo Router and organize routes logically.
+
+Navigation should be predictable and deep-link friendly.
+
+Support appropriate navigation patterns such as:
+
+- Bottom tabs
+- Stack navigation
+- Modal screens
+- Product detail navigation
+- Checkout navigation
+
+Do not duplicate navigation logic across screens.
+
+Handle:
+
+- Back navigation
+- Deep links
+- Authentication redirects
+- Unauthorized screens
+- Not-found screens
+
+---
+
+## 15. Loading States
+
+Every asynchronous screen/section must have a deliberate loading state.
+
+Prefer:
+
+- Skeleton loaders
+- Placeholder content
+- Progressive loading
+
+Avoid displaying blank white screens.
+
+Do not use excessive spinners.
+
+---
+
+## 16. Error Handling
+
+Every API-driven feature must handle:
+
+- Network failure
+- Timeout
+- Server error
+- Unauthorized response
+- Invalid response
+- Empty response
+- Offline state where applicable
+
+Provide user-friendly error messages.
+
+Never expose:
+
+- Stack traces
+- Internal API errors
+- Database errors
+- Secrets
+- Debug information
+
+Developers should still have useful logs in development builds.
+
+---
+
+## 17. Empty States
+
+Design proper empty states for:
+
+- Empty cart
+- No products
+- No search results
+- No orders
+- Empty wishlist
+- No addresses
+- No notifications
+- Failed requests
+
+Every empty state should clearly communicate what happened and what the user can do next.
+
+---
+
+## 18. Performance
+
+Performance is a production requirement.
+
+Optimize:
+
+- List rendering
+- Product image loading
+- API requests
+- Navigation
+- Re-renders
+- State updates
+- Bundle size
+- Memory usage
+
+Use FlatList/FlashList where appropriate.
+
+Do not render large product collections using ScrollView.
+
+Avoid unnecessary React re-renders.
+
+Memoize only when there is a measurable benefit.
+
+Do not optimize prematurely at the expense of maintainability.
+
+---
+
+## 19. Images
+
+E-commerce images are performance-critical.
+
+Implement:
+
+- Proper image sizing
+- Lazy loading where appropriate
+- Caching
+- Placeholder states
+- Error fallback
+- Correct aspect ratios
+
+Avoid downloading unnecessarily large images.
+
+Do not stretch product images.
+
+---
+
+## 20. Accessibility
+
+The app must be accessible.
+
+Consider:
+
+- Accessible labels
+- Touch target sizes
+- Contrast
+- Screen readers
+- Dynamic text
+- Focus behavior
+- Keyboard navigation where applicable
+
+Interactive controls should generally have sufficiently large touch targets.
+
+Never communicate important information through color alone.
+
+---
+
+## 21. Forms
+
+Use React Hook Form and Zod where appropriate.
+
+Forms must provide:
+
+- Validation
+- Clear errors
+- Loading states
+- Disabled submit state
+- Keyboard-aware behavior
+- Proper input types
+- Appropriate autofill
+- Server-side error handling
+
+Do not allow accidental duplicate submissions.
+
+---
+
+## 22. Security
+
+Never:
+
+- Hardcode secrets
+- Commit API keys
+- Store passwords
+- Trust client-side prices
+- Trust client-side discount calculations
+- Trust client-side inventory
+- Trust client-side payment status
+
+The server remains authoritative for:
+
+- Price
+- Inventory
+- Discounts
+- Coupons
+- Payment
+- Order totals
+- Order status
+
+Validate all important data received from APIs.
+
+---
+
+## 23. Offline / Poor Network
+
+Assume users can have:
+
+- Slow internet
+- Intermittent internet
+- No internet
+
+The app should fail gracefully.
+
+Do not crash when the network disappears.
+
+Provide useful retry behavior.
+
+Cache appropriate read-only data where practical.
+
+Never falsely show an order/payment as successful when confirmation has not been received from the server.
+
+---
+
+## 24. UX Rules
+
+The app should feel:
+
+- Premium
+- Fast
+- Clean
+- Trustworthy
+- Consistent
+- Native
+- Easy to navigate
+
+Avoid:
+
+- Excessive animations
+- Unnecessary gradients
+- Cluttered screens
+- Tiny text
+- Tiny buttons
+- Excessive cards
+- Random spacing
+- Inconsistent typography
+- Web-like layouts that feel unnatural on mobile
+
+Use animations only when they improve feedback or understanding.
+
+---
+
+## 25. Component Rules
+
+Build reusable components for repeated UI patterns.
+
+Examples:
+
+- Button
+- Input
+- ProductCard
+- ProductGrid
+- ProductImage
+- Price
+- Rating
+- Badge
+- SearchBar
+- EmptyState
+- ErrorState
+- Skeleton
+- Modal
+- BottomSheet
+- Header
+
+Avoid duplicating the same UI logic across screens.
+
+---
+
+## 26. TypeScript
+
+Use strict TypeScript.
+
+Avoid:
+
+any
+
+unless absolutely unavoidable.
+
+Prefer:
+
+- Interfaces/types
+- Discriminated unions
+- Typed API responses
+- Typed navigation params
+- Typed component props
+
+Do not suppress TypeScript errors without understanding the underlying issue.
+
+---
+
+## 27. Code Quality
+
+Code must be:
+
+- Readable
+- Maintainable
+- Modular
+- Testable
+- Consistent
+
+Avoid:
+
+- Dead code
+- Duplicate code
+- Magic numbers
+- Magic strings
+- Huge components
+- Deeply nested conditions
+- Unnecessary abstractions
+- Temporary hacks
+
+Comments should explain WHY something exists, not WHAT obvious code does.
+
+---
+
+## 28. Testing
+
+Critical business functionality must be testable.
+
+Prioritize tests for:
+
+- Authentication
+- Cart
+- Checkout
+- Pricing
+- Product variants
+- Order creation
+- Navigation guards
+- API error handling
+
+Do not consider the feature complete until critical paths have been verified.
+
+---
+
+## 29. Bug Prevention
+
+Before considering a feature complete:
+
+1. Test the happy path.
+2. Test invalid input.
+3. Test empty states.
+4. Test API failure.
+5. Test slow network.
+6. Test repeated taps.
+7. Test app restart.
+8. Test authentication expiration.
+9. Test small screens.
+10. Test both Android and iOS behavior.
+
+Fix root causes rather than masking symptoms.
+
+---
+
+## 30. Production Readiness
+
+Before release verify:
+
+- No debug logs containing sensitive information
+- No hardcoded secrets
+- No development URLs
+- No placeholder content
+- No broken navigation
+- No unhandled promises
+- No TypeScript errors
+- No lint errors
+- No obvious performance issues
+- No crashes during critical flows
+- Android build works
+- iOS build works
+- Production environment configuration works
+
+---
+
+## 31. Agent Behavior
+
+Before making significant architectural changes:
+
+1. Inspect the existing codebase.
+2. Understand existing conventions.
+3. Reuse existing implementations where possible.
+4. Check whether the web application already solves the problem.
+5. Make the smallest maintainable change necessary.
+
+Do not rewrite working systems without a clear reason.
+
+Do not create duplicate implementations.
+
+Do not make assumptions about APIs or business logic when the existing codebase can answer the question.
+
+When something is unclear, inspect the repository first.
+
+---
+
+## 32. Definition of Done
+
+A feature is NOT complete simply because the UI renders.
+
+A feature is complete only when:
+
+- UI matches the established design system
+- Web behavior is respected
+- API integration works
+- Loading states exist
+- Error states exist
+- Empty states exist
+- Accessibility is considered
+- Android works
+- iOS works
+- TypeScript passes
+- Lint passes
+- Critical interactions are tested
+- No obvious production bugs remain
+- Code is maintainable
