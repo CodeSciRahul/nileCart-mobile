@@ -60,15 +60,25 @@ export type Category = {
 export type CategoriesResponse = {
   success?: boolean;
   categories?: Category[];
+  departments?: Array<{
+    department?: string;
+    slug?: string;
+    label?: string;
+    categories?: Category[];
+  }>;
 };
 
 export type Banner = {
   _id?: string;
   title?: string;
+  description?: string;
   image?: string | { url?: string };
   mobileImage?: string | { url?: string };
   link?: string;
   href?: string;
+  ctaHref?: string;
+  ctaLink?: string;
+  ctaText?: string;
 };
 
 export type HomeSection = {

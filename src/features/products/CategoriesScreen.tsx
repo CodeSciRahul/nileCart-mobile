@@ -7,29 +7,29 @@ import {
   Text,
   View,
 } from "react-native";
+import { Image } from "expo-image";
 import { useQuery } from "@tanstack/react-query";
 import { router } from "expo-router";
 import { queryKeys } from "@/constants/queryKeys";
 import { DEPARTMENT_LABELS, DEPARTMENT_ORDER } from "@/constants";
 import { getCategoryNavigation, getCategoryTree } from "@/services/categoryService";
 import { ErrorState } from "@/components/ui/EmptyState";
-import { colors, spacing, typography } from "@/theme";
+import { getImageUrl } from "@/utils/format";
+import { colors, radius, spacing, textStyles, typography } from "@/theme";
 import type { Category } from "@/types/models";
 
-function flattenChildren(categories: Category[]): Category[] {
-  const result: Category[] = [];
-  const walk = (nodes: Category[]) => {
-    nodes.forEach((node) => {
-      result.push(node);
-      if (node.children?.length) walk(node.children);
-    });
-  };
-  walk(categories);
-  return result;
+function topLevelCategories(categories: Category[]): Category[] {
+  return categories.filter((cat) => {
+    if (!cat.parent) return true;
+    if (typeof cat.parent === "string") return false;
+    return !cat.parent._id;
+  });
 }
 
 export function CategoriesScreen() {
-  const [department, setDepartment] = useState<string>(DEPARTMENT_ORDER[0] || "women");
+  const [department, setDepartment] = useState<string>(
+    DEPARTMENT_ORDER[0] || "women"
+  );
 
   const navQuery = useQuery({
     queryKey: queryKeys.categories.navigation,
@@ -41,29 +41,40 @@ export function CategoriesScreen() {
     queryFn: getCategoryTree,
   });
 
+  const navDepartments = navQuery.data?.departments || [];
+  const activeNav = navDepartments.find(
+    (dept) => dept.department === department || dept.slug === department
+  );
+
   const categories = useMemo(() => {
+    if (activeNav?.categories?.length) {
+      return activeNav.categories;
+    }
     const tree = (treeQuery.data?.categories || []) as Category[];
-    const all = flattenChildren(tree);
-    const filtered = all.filter((cat) => {
+    const roots = topLevelCategories(tree);
+    const filtered = roots.filter((cat) => {
       if (!cat.department) return true;
       return cat.department === department;
     });
-    return filtered.length ? filtered : all;
-  }, [treeQuery.data, department]);
+    return filtered.length ? filtered : roots;
+  }, [activeNav, treeQuery.data, department]);
 
-  if (navQuery.isLoading || treeQuery.isLoading) {
+  if (treeQuery.isLoading && navQuery.isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={colors.brandAmber} />
+        <ActivityIndicator color={colors.primary} />
       </View>
     );
   }
 
-  if (treeQuery.isError) {
+  if (treeQuery.isError && !navDepartments.length) {
     return (
       <ErrorState
         description="Could not load categories."
-        onRetry={() => treeQuery.refetch()}
+        onRetry={() => {
+          treeQuery.refetch();
+          navQuery.refetch();
+        }}
       />
     );
   }
@@ -71,43 +82,72 @@ export function CategoriesScreen() {
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Categories</Text>
+      <Text style={styles.subtitle}>Start where you shop, then refine.</Text>
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
+        style={styles.deptScroll}
         contentContainerStyle={styles.deptRow}
       >
-        {DEPARTMENT_ORDER.map((key) => (
-          <Pressable
-            key={key}
-            onPress={() => setDepartment(key)}
-            style={[
-              styles.deptChip,
-              department === key && styles.deptChipActive,
-            ]}
-          >
-            <Text
-              style={[
-                styles.deptLabel,
-                department === key && styles.deptLabelActive,
-              ]}
+        {DEPARTMENT_ORDER.map((key) => {
+          const active = department === key;
+          return (
+            <Pressable
+              key={key}
+              onPress={() => setDepartment(key)}
+              style={[styles.deptChip, active && styles.deptChipActive]}
             >
-              {DEPARTMENT_LABELS[key]}
-            </Text>
-          </Pressable>
-        ))}
+              <Text
+                numberOfLines={1}
+                style={[styles.deptLabel, active && styles.deptLabelActive]}
+              >
+                {DEPARTMENT_LABELS[key]}
+              </Text>
+            </Pressable>
+          );
+        })}
       </ScrollView>
 
-      <ScrollView contentContainerStyle={styles.list}>
-        {categories.map((cat) => (
-          <Pressable
-            key={cat._id}
-            onPress={() => router.push(`/shop/${cat.slug}`)}
-            style={styles.row}
-          >
-            <Text style={styles.rowLabel}>{cat.name}</Text>
-            <Text style={styles.chevron}>›</Text>
-          </Pressable>
-        ))}
+      <ScrollView
+        style={styles.listScroll}
+        contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
+      >
+        {categories.length === 0 ? (
+          <Text style={styles.empty}>
+            No categories in {DEPARTMENT_LABELS[department] || department} yet.
+          </Text>
+        ) : (
+          <View style={styles.grid}>
+            {categories.map((cat, index) => {
+              const uri = getImageUrl(cat.image);
+              const initial = cat.name?.charAt(0)?.toUpperCase() || "?";
+              return (
+                <Pressable
+                  key={cat._id || cat.slug || String(index)}
+                  onPress={() => router.push(`/shop/${cat.slug}`)}
+                  style={styles.tile}
+                >
+                  <View style={styles.tileImage}>
+                    {uri ? (
+                      <Image
+                        source={{ uri }}
+                        style={StyleSheet.absoluteFill}
+                        contentFit="cover"
+                      />
+                    ) : (
+                      <Text style={styles.tileInitial}>{initial}</Text>
+                    )}
+                  </View>
+                  <Text style={styles.tileLabel} numberOfLines={2}>
+                    {cat.name}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -125,56 +165,90 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   title: {
-    fontFamily: typography.fontFamily.bold,
-    fontSize: typography.size["2xl"],
-    color: colors.foreground,
+    ...textStyles.screenTitle,
     paddingHorizontal: spacing.lg,
+  },
+  subtitle: {
+    ...textStyles.bodySecondary,
+    paddingHorizontal: spacing.lg,
+    marginTop: 4,
     marginBottom: spacing.md,
+  },
+  deptScroll: {
+    flexGrow: 0,
+    flexShrink: 0,
   },
   deptRow: {
     paddingHorizontal: spacing.lg,
     gap: spacing.sm,
     paddingBottom: spacing.md,
+    alignItems: "center",
   },
   deptChip: {
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: 999,
+    paddingVertical: 8,
+    borderRadius: radius.full,
     backgroundColor: colors.brandCream,
     borderWidth: 1,
-    borderColor: "rgba(255, 191, 0, 0.2)",
+    borderColor: colors.amberRing,
+    flexShrink: 0,
   },
   deptChipActive: {
-    backgroundColor: colors.brandAmber,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   deptLabel: {
     fontFamily: typography.fontFamily.medium,
-    fontSize: typography.size.sm,
+    fontSize: 13,
     color: colors.brandGray,
   },
   deptLabelActive: {
     color: colors.foreground,
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
+  },
+  listScroll: {
+    flex: 1,
   },
   list: {
     paddingHorizontal: spacing.lg,
     paddingBottom: spacing["5xl"],
   },
-  row: {
-    minHeight: 52,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+  grid: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: spacing.md,
   },
-  rowLabel: {
+  tile: {
+    width: "30%",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  tileImage: {
+    width: 72,
+    height: 72,
+    borderRadius: radius.full,
+    overflow: "hidden",
+    backgroundColor: colors.brandCream,
+    borderWidth: 1,
+    borderColor: colors.amberRing,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tileInitial: {
+    fontFamily: typography.fontFamily.displayMedium,
+    fontSize: 22,
+    color: colors.brandAmber,
+  },
+  tileLabel: {
     fontFamily: typography.fontFamily.medium,
-    fontSize: typography.size.md,
+    fontSize: 11,
+    lineHeight: 15,
+    textAlign: "center",
     color: colors.foreground,
   },
-  chevron: {
-    fontSize: 22,
-    color: colors.brandGray,
+  empty: {
+    ...textStyles.bodySecondary,
+    textAlign: "center",
+    paddingVertical: spacing["3xl"],
   },
 });
