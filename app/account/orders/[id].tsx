@@ -18,7 +18,7 @@ import { useUiStore } from "@/store/uiStore";
 import { Button } from "@/components/ui/Button";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { formatMoney, getImageUrl } from "@/utils/format";
-import { colors, spacing, typography } from "@/theme";
+import { colors, spacing, textStyles, typography } from "@/theme";
 import type { Order } from "@/types/models";
 
 function canCancel(order: Order) {
@@ -98,7 +98,7 @@ export default function OrderDetailRoute() {
   if (orderQuery.isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={colors.brandAmber} />
+        <ActivityIndicator color={colors.primary} />
       </View>
     );
   }
@@ -123,6 +123,7 @@ export default function OrderDetailRoute() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <Text style={styles.kicker}>Order</Text>
       <Text style={styles.title}>
         {order.orderNumber || order._id.slice(-8)}
       </Text>
@@ -232,9 +233,14 @@ const styles = StyleSheet.create({
   },
   center: { flex: 1, alignItems: "center", justifyContent: "center" },
   title: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.displayMedium,
     fontSize: typography.size["2xl"],
     color: colors.foreground,
+  },
+  kicker: {
+    ...textStyles.eyebrow,
+    color: colors.brandAmber,
+    letterSpacing: 2,
   },
   meta: {
     fontFamily: typography.fontFamily.medium,
@@ -242,13 +248,13 @@ const styles = StyleSheet.create({
     fontSize: typography.size.sm,
   },
   total: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
     fontSize: typography.size.lg,
     color: colors.foreground,
   },
   section: {
     marginTop: spacing.md,
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
     fontSize: typography.size.md,
     color: colors.foreground,
   },
@@ -271,7 +277,7 @@ const styles = StyleSheet.create({
     color: colors.brandGray,
   },
   itemPrice: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
     fontSize: typography.size.sm,
     marginTop: 4,
   },

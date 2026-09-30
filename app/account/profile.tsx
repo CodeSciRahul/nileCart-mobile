@@ -14,7 +14,7 @@ import { useUiStore } from "@/store/uiStore";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { colors, spacing, typography } from "@/theme";
+import { colors, spacing, textStyles, typography } from "@/theme";
 
 const GENDERS = ["Male", "Female", "Other", "Prefer not to say"] as const;
 
@@ -75,6 +75,8 @@ export default function ProfileRoute() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <Text style={styles.kicker}>Profile</Text>
+      <Text style={styles.heading}>Your details</Text>
       <Text style={styles.label}>Email</Text>
       <Text style={styles.value}>{user?.email || "—"}</Text>
 
@@ -139,6 +141,15 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingBottom: spacing["5xl"],
   },
+  kicker: {
+    ...textStyles.eyebrow,
+    color: colors.brandAmber,
+    letterSpacing: 2,
+  },
+  heading: {
+    ...textStyles.sectionTitle,
+    marginBottom: spacing.sm,
+  },
   label: {
     marginTop: spacing.sm,
     fontFamily: typography.fontFamily.medium,
@@ -148,7 +159,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
   value: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
     fontSize: typography.size.md,
     color: colors.foreground,
     marginBottom: spacing.sm,
@@ -172,6 +183,6 @@ const styles = StyleSheet.create({
   },
   genderLabelActive: {
     color: colors.foreground,
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
   },
 });

@@ -20,7 +20,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useUiStore } from "@/store/uiStore";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
-import { colors, spacing, typography } from "@/theme";
+import { colors, spacing, textStyles, typography } from "@/theme";
 import type { Address } from "@/types/models";
 
 export default function AddressesRoute() {
@@ -81,7 +81,7 @@ export default function AddressesRoute() {
   if (addressesQuery.isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={colors.brandAmber} />
+        <ActivityIndicator color={colors.primary} />
       </View>
     );
   }
@@ -113,10 +113,12 @@ export default function AddressesRoute() {
         }
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text style={styles.name}>
-              {item.fullName}
-              {item.isDefault ? " · Default" : ""}
-            </Text>
+            <View style={styles.nameRow}>
+              <Text style={styles.name}>{item.fullName}</Text>
+              {item.isDefault ? (
+                <Text style={styles.defaultBadge}>Default</Text>
+              ) : null}
+            </View>
             <Text style={styles.body}>
               {item.addressLine}, {item.city}, {item.state} {item.pincode}
             </Text>
@@ -169,14 +171,29 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.md,
+    padding: spacing.lg,
     gap: 4,
     marginBottom: spacing.md,
-    backgroundColor: colors.brandWhite,
+    backgroundColor: colors.card,
+  },
+  nameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    flexWrap: "wrap",
   },
   name: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
     color: colors.foreground,
+    fontSize: typography.size.md,
+  },
+  defaultBadge: {
+    ...textStyles.badge,
+    color: colors.foreground,
+    backgroundColor: colors.amberMuted,
+    overflow: "hidden",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
   body: {
     fontFamily: typography.fontFamily.regular,
@@ -189,12 +206,12 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   link: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.medium,
     color: colors.foreground,
     fontSize: typography.size.sm,
   },
   delete: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.medium,
     color: colors.destructive,
     fontSize: typography.size.sm,
   },

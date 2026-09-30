@@ -7,7 +7,7 @@ import { getMyOrders } from "@/services/checkoutService";
 import { useAuthStore } from "@/store/authStore";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { formatMoney } from "@/utils/format";
-import { colors, spacing, typography } from "@/theme";
+import { colors, spacing, textStyles, typography } from "@/theme";
 import type { Order } from "@/types/models";
 
 export default function OrdersRoute() {
@@ -32,7 +32,7 @@ export default function OrdersRoute() {
   if (ordersQuery.isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator color={colors.brandAmber} />
+        <ActivityIndicator color={colors.primary} />
       </View>
     );
   }
@@ -74,10 +74,12 @@ export default function OrdersRoute() {
           <Text style={styles.orderNo}>
             {item.orderNumber || item._id.slice(-8)}
           </Text>
-          <Text style={styles.meta}>
-            {item.orderStatus || item.status || "Processing"} ·{" "}
-            {formatMoney(item.total)}
-          </Text>
+          <View style={styles.statusPill}>
+            <Text style={styles.statusText}>
+              {item.orderStatus || item.status || "Processing"}
+            </Text>
+          </View>
+          <Text style={styles.meta}>{formatMoney(item.total)}</Text>
           {item.createdAt ? (
             <Text style={styles.date}>
               {new Date(item.createdAt).toLocaleDateString()}
@@ -90,25 +92,38 @@ export default function OrdersRoute() {
 }
 
 const styles = StyleSheet.create({
-  content: { padding: spacing.lg },
+  content: { padding: spacing.lg, paddingBottom: spacing["5xl"] },
   center: { flex: 1, alignItems: "center", justifyContent: "center" },
   card: {
     borderWidth: 1,
     borderColor: colors.border,
-    padding: spacing.md,
-    gap: 4,
-    backgroundColor: colors.brandWhite,
+    padding: spacing.lg,
+    gap: 6,
+    backgroundColor: colors.card,
     marginBottom: spacing.md,
   },
   orderNo: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.displayMedium,
     fontSize: typography.size.md,
     color: colors.foreground,
   },
+  statusPill: {
+    alignSelf: "flex-start",
+    backgroundColor: colors.amberMuted,
+    borderWidth: 1,
+    borderColor: colors.amberBorder,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  statusText: {
+    ...textStyles.badge,
+    color: colors.foreground,
+    textTransform: "capitalize",
+  },
   meta: {
-    fontFamily: typography.fontFamily.medium,
+    fontFamily: typography.fontFamily.semibold,
     fontSize: typography.size.sm,
-    color: colors.brandGray,
+    color: colors.foreground,
   },
   date: {
     fontFamily: typography.fontFamily.regular,

@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   title: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.displayMedium,
     fontSize: typography.size.lg,
     color: colors.foreground,
     textAlign: "center",
