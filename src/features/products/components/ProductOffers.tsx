@@ -71,7 +71,7 @@ export function ProductOffers() {
       {/* Coupon 2 */}
       <View style={[styles.couponCard, styles.couponCardAlt]}>
         <View style={styles.couponLeft}>
-          <View style={[styles.percentBadge, { backgroundColor: "#DCFCE7" }]}>
+          <View style={[styles.percentBadge, { backgroundColor: colors.successMuted }]}>
             <Percent size={14} color={colors.success} />
           </View>
           <View style={styles.couponDetails}>
@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(232, 224, 200, 0.5)",
-    backgroundColor: colors.brandWhite,
+    borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.background,
     gap: 12,
   },
   header: {
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   badge: {
     fontFamily: typography.fontFamily.bold,
     fontSize: 10,
-    color: "#B45309",
+    color: colors.warning,
     backgroundColor: colors.brandCream,
     paddingHorizontal: 6,
     paddingVertical: 2,
@@ -156,13 +156,13 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: "rgba(255, 191, 0, 0.35)",
-    backgroundColor: "rgba(255, 245, 209, 0.35)",
+    borderColor: colors.amberBorder,
+    backgroundColor: colors.creamSoft,
     gap: 12,
   },
   couponCardAlt: {
-    borderColor: "rgba(22, 163, 74, 0.25)",
-    backgroundColor: "rgba(240, 253, 244, 0.5)",
+    borderColor: colors.successBorder,
+    backgroundColor: colors.successMuted,
   },
   couponLeft: {
     flexDirection: "row",
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   discountHighlight: {
     fontFamily: typography.fontFamily.bold,
     fontSize: 11,
-    color: "#B45309",
+    color: colors.warning,
   },
   couponDescription: {
     fontFamily: typography.fontFamily.regular,
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   },
   copyBtnSuccess: {
     borderColor: colors.success,
-    backgroundColor: "#F0FDF4",
+    backgroundColor: colors.successMuted,
   },
   copyBtnText: {
     fontFamily: typography.fontFamily.bold,

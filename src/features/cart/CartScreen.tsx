@@ -11,7 +11,7 @@ import { useAuthStore } from "@/store/authStore";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { formatMoney, getProductImageUrls } from "@/utils/format";
-import { colors, spacing, typography } from "@/theme";
+import { colors, spacing, textStyles, typography } from "@/theme";
 import type { CartItem } from "@/types/models";
 
 export function CartScreen() {

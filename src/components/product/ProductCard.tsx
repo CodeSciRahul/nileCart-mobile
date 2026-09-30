@@ -5,7 +5,7 @@ import { Heart, ShoppingBag } from "lucide-react-native";
 import { router } from "expo-router";
 import type { Product } from "@/types/models";
 import { formatMoney, getDiscountPercent, getProductImageUrls } from "@/utils/format";
-import { colors, spacing, typography } from "@/theme";
+import { colors, spacing, textStyles, typography } from "@/theme";
 import { useAddToCart } from "@/hooks/useCart";
 import { useToggleWishlist } from "@/hooks/useWishlist";
 
@@ -69,7 +69,7 @@ function ProductCardComponent({ product, currency = "UGX" }: Props) {
           onPress={onWishlist}
           style={styles.wishBtn}
         >
-          <Heart size={16} color={colors.foreground} />
+          <Heart size={16} color={colors.foreground} strokeWidth={1.75} />
         </Pressable>
       </View>
 
@@ -95,8 +95,10 @@ function ProductCardComponent({ product, currency = "UGX" }: Props) {
           onPress={onAdd}
           style={styles.addBtn}
         >
-          <ShoppingBag size={14} color={colors.foreground} />
-          <Text style={styles.addLabel}>Add</Text>
+          <ShoppingBag size={14} color={colors.foreground} strokeWidth={1.75} />
+          <Text style={styles.addLabel}>
+            {addToCart.isPending ? "Adding…" : "Add to Bag"}
+          </Text>
         </Pressable>
       </View>
     </Pressable>
@@ -108,14 +110,12 @@ export const ProductCard = memo(ProductCardComponent);
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "rgba(255, 191, 0, 0.25)",
-    backgroundColor: colors.productCard,
-    overflow: "hidden",
+    backgroundColor: colors.background,
   },
   imageWrap: {
-    aspectRatio: 5 / 4,
+    aspectRatio: 3 / 4,
     backgroundColor: colors.imagePlaceholder,
+    overflow: "hidden",
   },
   image: {
     width: "100%",
@@ -130,50 +130,37 @@ const styles = StyleSheet.create({
     right: spacing.sm,
     width: 32,
     height: 32,
-    borderRadius: 16,
-    backgroundColor: "rgba(255,255,255,0.92)",
     alignItems: "center",
     justifyContent: "center",
   },
   body: {
-    padding: spacing.md,
-    gap: 4,
+    paddingTop: 10,
+    gap: 2,
   },
   brand: {
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.size.xs,
-    color: colors.brandGray,
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
+    ...textStyles.eyebrow,
+    fontSize: 11,
+    letterSpacing: 0.8,
   },
   title: {
-    fontFamily: typography.fontFamily.medium,
-    fontSize: typography.size.sm,
-    color: colors.foreground,
+    ...textStyles.productTitle,
     minHeight: 36,
   },
   priceRow: {
     flexDirection: "row",
     flexWrap: "wrap",
-    alignItems: "center",
+    alignItems: "baseline",
     gap: 6,
-    marginTop: 2,
+    marginTop: 4,
   },
   price: {
-    fontFamily: typography.fontFamily.bold,
-    fontSize: typography.size.sm,
-    color: colors.foreground,
+    ...textStyles.price,
   },
   mrp: {
-    fontFamily: typography.fontFamily.regular,
-    fontSize: typography.size.xs,
-    color: colors.brandGray,
-    textDecorationLine: "line-through",
+    ...textStyles.priceStruck,
   },
   discount: {
-    fontFamily: typography.fontFamily.bold,
-    fontSize: typography.size.xs,
-    color: colors.success,
+    ...textStyles.discount,
   },
   addBtn: {
     marginTop: spacing.sm,
@@ -181,14 +168,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: colors.brandAmber,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    minHeight: 36,
+    paddingVertical: 4,
   },
   addLabel: {
-    fontFamily: typography.fontFamily.bold,
-    fontSize: typography.size.xs,
+    fontFamily: typography.fontFamily.medium,
+    fontSize: 11,
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
     color: colors.foreground,
   },
 });

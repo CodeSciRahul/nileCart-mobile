@@ -16,7 +16,7 @@ import { getSubCategories } from "@/services/categoryService";
 import { ProductGrid } from "@/components/product/ProductGrid";
 import { BrandLogo } from "@/components/BrandLogo";
 import { getImageUrl } from "@/utils/format";
-import { colors, spacing, typography } from "@/theme";
+import { colors, radius, spacing, textStyles, typography } from "@/theme";
 import type { Banner, Category, Product } from "@/types/models";
 import { Search } from "lucide-react-native";
 

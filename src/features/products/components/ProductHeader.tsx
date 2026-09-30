@@ -1,15 +1,13 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { ChevronLeft, Heart, Share2, ShoppingBag } from "lucide-react-native";
-import { colors, radius, typography } from "@/theme";
+import { colors, radius, shadows, typography } from "@/theme";
 
 type Props = {
   isWishlisted?: boolean;
   onToggleWishlist: () => void;
   onShare: () => void;
   cartCount?: number;
-  scrollY?: number;
 };
 
 export function ProductHeader({
@@ -18,8 +16,6 @@ export function ProductHeader({
   onShare,
   cartCount = 0,
 }: Props) {
-  const insets = useSafeAreaInsets();
-
   const handleBack = () => {
     if (router.canGoBack()) {
       router.back();
@@ -33,13 +29,8 @@ export function ProductHeader({
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        { paddingTop: Math.max(insets.top, 12) + 6 },
-      ]}
-      pointerEvents="box-none"
-    >
+    <View style={styles.container} pointerEvents="box-none">
+      {/* Back Button on Image */}
       <Pressable
         accessibilityLabel="Go back"
         accessibilityRole="button"
@@ -50,6 +41,7 @@ export function ProductHeader({
         <ChevronLeft size={22} color={colors.foreground} strokeWidth={2.2} />
       </Pressable>
 
+      {/* Floating Action Icons on Image (Share, Wishlist, Bag) */}
       <View style={styles.rightActions} pointerEvents="box-none">
         <Pressable
           accessibilityLabel="Share product"
@@ -66,7 +58,7 @@ export function ProductHeader({
           accessibilityRole="button"
           hitSlop={8}
           onPress={onToggleWishlist}
-          style={styles.iconCircle}
+          style={[styles.iconCircle, isWishlisted && styles.iconCircleWishlisted]}
         >
           <Heart
             size={19}
@@ -100,7 +92,7 @@ export function ProductHeader({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    top: 0,
+    top: 12,
     left: 0,
     right: 0,
     zIndex: 30,
@@ -108,7 +100,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    backgroundColor: "transparent",
   },
   rightActions: {
     flexDirection: "row",
@@ -119,16 +111,16 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: radius.full,
-    backgroundColor: "rgba(255, 255, 255, 0.88)",
+    backgroundColor: colors.whiteOverlay,
     borderWidth: 1,
-    borderColor: "rgba(232, 224, 200, 0.8)",
+    borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
-    elevation: 3,
+    ...shadows.sm,
+  },
+  iconCircleWishlisted: {
+    backgroundColor: colors.whiteOverlay,
+    borderColor: colors.destructiveBorder,
   },
   badge: {
     position: "absolute",
@@ -145,7 +137,7 @@ const styles = StyleSheet.create({
     borderColor: colors.brandWhite,
   },
   badgeText: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
     fontSize: 9,
     color: colors.foreground,
     lineHeight: 11,

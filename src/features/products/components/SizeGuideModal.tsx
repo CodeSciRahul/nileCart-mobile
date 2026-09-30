@@ -124,7 +124,7 @@ export function SizeGuideModal({ visible, onClose }: Props) {
             {/* Fit Tips */}
             <View style={styles.fitBox}>
               <View style={styles.fitHeader}>
-                <Info size={16} color="#B45309" />
+                <Info size={16} color={colors.warning} />
                 <Text style={styles.fitTitle}>Savana Fit Recommendation</Text>
               </View>
               <Text style={styles.fitText}>
@@ -161,7 +161,7 @@ export function SizeGuideModal({ visible, onClose }: Props) {
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.45)",
+    backgroundColor: colors.overlay,
     justifyContent: "flex-end",
   },
   backdrop: {
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   handleBar: {
     width: 40,
     height: 4,
-    backgroundColor: "#D4D4D4",
+    backgroundColor: colors.border,
     borderRadius: 2,
     alignSelf: "center",
     marginTop: 10,
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
   },
   unitTabActive: {
     backgroundColor: colors.brandWhite,
-    shadowColor: "#000",
+    shadowColor: colors.foreground,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
@@ -270,11 +270,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(232, 224, 200, 0.4)",
+    borderBottomColor: colors.borderSoft,
     alignItems: "center",
   },
   tableRowAlt: {
-    backgroundColor: "rgba(255, 245, 209, 0.2)",
+    backgroundColor: colors.creamSoft,
   },
   td: {
     flex: 1,
@@ -290,9 +290,9 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.bold,
   },
   fitBox: {
-    backgroundColor: "rgba(255, 191, 0, 0.12)",
+    backgroundColor: colors.amberMuted,
     borderWidth: 1,
-    borderColor: "rgba(255, 191, 0, 0.3)",
+    borderColor: colors.amberBorder,
     padding: 14,
     borderRadius: radius.lg,
     gap: 6,
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
   fitTitle: {
     fontFamily: typography.fontFamily.bold,
     fontSize: typography.size.xs,
-    color: "#92400E",
+    color: colors.warning,
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },

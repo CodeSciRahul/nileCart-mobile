@@ -82,7 +82,7 @@ export function ProductVariantsSelector({
                     <View
                       style={[
                         styles.colorCircle,
-                        { backgroundColor: option.colorHex || "#d4d4d4" },
+                        { backgroundColor: option.colorHex || colors.border },
                       ]}
                     >
                       {isActive ? (
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(232, 224, 200, 0.5)",
+    borderBottomColor: colors.borderSoft,
     backgroundColor: colors.brandWhite,
     gap: 16,
   },
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: 1,
-    borderColor: "rgba(0, 0, 0, 0.15)",
+    borderColor: colors.inkMuted,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: radius.sm,
-    backgroundColor: "rgba(255, 245, 209, 0.6)",
+    backgroundColor: colors.creamMuted,
   },
   sizeGuideText: {
     fontFamily: typography.fontFamily.bold,
@@ -327,8 +327,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.foreground,
   },
   sizeChipDisabled: {
-    borderColor: "#E5E5E5",
-    backgroundColor: "#F9F9F9",
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
     opacity: 0.5,
   },
   sizeLabel: {
@@ -341,13 +341,13 @@ const styles = StyleSheet.create({
     color: colors.brandWhite,
   },
   sizeLabelDisabled: {
-    color: "#A3A3A3",
+    color: colors.disabledText,
   },
   oosStrikethrough: {
     position: "absolute",
     width: "80%",
     height: 1,
-    backgroundColor: "#A3A3A3",
+    backgroundColor: colors.disabledText,
     transform: [{ rotate: "-24deg" }],
   },
 });

@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     backgroundColor: colors.brandWhite,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(232, 224, 200, 0.5)",
+    borderBottomColor: colors.borderSoft,
   },
   header: {
     paddingHorizontal: 16,

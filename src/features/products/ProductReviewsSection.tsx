@@ -24,8 +24,8 @@ function Stars({ value = 0, size = 14 }: { value?: number; size?: number }) {
         <Star
           key={star}
           size={size}
-          color="#CA8A04"
-          fill={star <= rating ? "#CA8A04" : "transparent"}
+          color={colors.star}
+          fill={star <= rating ? colors.star : "transparent"}
         />
       ))}
     </View>
@@ -198,8 +198,8 @@ export function ProductReviewsSection({ product }: Props) {
                   >
                     <Star
                       size={32}
-                      color="#CA8A04"
-                      fill={value <= rating ? "#CA8A04" : "transparent"}
+                      color={colors.star}
+                      fill={value <= rating ? colors.star : "transparent"}
                     />
                   </Pressable>
                 ))}
@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     backgroundColor: colors.brandWhite,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(232, 224, 200, 0.5)",
+    borderBottomColor: colors.borderSoft,
     gap: 16,
   },
   header: {
@@ -272,8 +272,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: "rgba(255, 191, 0, 0.3)",
-    backgroundColor: "rgba(255, 245, 209, 0.3)",
+    borderColor: colors.amberBorder,
+    backgroundColor: colors.creamSoft,
     gap: 20,
   },
   summaryScoreBox: {
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   barTrack: {
     flex: 1,
     height: 5,
-    backgroundColor: "rgba(0, 0, 0, 0.08)",
+    backgroundColor: colors.inkMuted,
     borderRadius: 3,
     overflow: "hidden",
   },
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: "rgba(232, 224, 200, 0.6)",
+    borderColor: colors.borderSoft,
     backgroundColor: colors.brandWhite,
     gap: 8,
   },
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: colors.brandCream,
     borderWidth: 1,
-    borderColor: "rgba(255, 191, 0, 0.4)",
+    borderColor: colors.amberBorder,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: "rgba(255, 245, 209, 0.15)",
+    backgroundColor: colors.creamSoft,
     gap: 12,
   },
   formTitle: {

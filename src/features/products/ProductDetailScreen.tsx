@@ -6,6 +6,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/constants/queryKeys";
@@ -31,7 +32,12 @@ import { ProductReviewsSection } from "./ProductReviewsSection";
 import { ProductRelated } from "./components/ProductRelated";
 import { ProductBottomBar } from "./components/ProductBottomBar";
 
-export function ProductDetailScreen() {
+type Props = {
+  wrapSafeArea?: boolean;
+};
+
+export function ProductDetailScreen({ wrapSafeArea = false }: Props = {}) {
+  const Container = wrapSafeArea ? SafeAreaView : View;
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const showToast = useUiStore((s) => s.showToast);
   const scrollRef = useRef<ScrollView>(null);
@@ -153,25 +159,27 @@ export function ProductDetailScreen() {
 
   if (productQuery.isLoading) {
     return (
-      <View style={styles.center}>
+      <Container style={styles.center} edges={["top"]}>
         <ActivityIndicator color={colors.brandAmber} size="large" />
-      </View>
+      </Container>
     );
   }
 
   if (productQuery.isError || !product) {
     return (
-      <ErrorState
-        title="Product unavailable"
-        description="This product could not be loaded or is no longer available."
-        onRetry={() => productQuery.refetch()}
-      />
+      <Container style={styles.screen} edges={["top"]}>
+        <ErrorState
+          title="Product unavailable"
+          description="This product could not be loaded or is no longer available."
+          onRetry={() => productQuery.refetch()}
+        />
+      </Container>
     );
   }
 
   return (
-    <View style={styles.screen}>
-      {/* Floating Translucent Header */}
+    <Container style={styles.screen} edges={["top"]}>
+      {/* Pinned Top Navigation Bar */}
       <ProductHeader
         isWishlisted={isWishlisted}
         onToggleWishlist={handleToggleWishlist}
@@ -189,7 +197,7 @@ export function ProductDetailScreen() {
         <ProductGallery
           images={gallery}
           discountPercent={discount}
-          isTrending={true}
+          isTrending={false}
         />
 
         {/* Pricing, Brand & Stock Section */}
@@ -265,7 +273,7 @@ export function ProductDetailScreen() {
         isOutOfStock={stock.key === "oos"}
         cartCount={cartCount}
       />
-    </View>
+    </Container>
   );
 }
 

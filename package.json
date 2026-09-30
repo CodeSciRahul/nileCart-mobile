@@ -11,7 +11,8 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@expo-google-fonts/roboto": "^0.4.3",
+    "@expo-google-fonts/dm-sans": "^0.4.2",
+    "@expo-google-fonts/syne": "^0.4.2",
     "@hookform/resolvers": "^5.9.1",
     "@shopify/flash-list": "^2.0.2",
     "@tanstack/react-query": "^5.102.8",

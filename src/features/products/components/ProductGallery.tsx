@@ -24,7 +24,7 @@ type Props = {
 export function ProductGallery({
   images,
   discountPercent = 0,
-  isTrending = true,
+  isTrending = false,
 }: Props) {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -33,7 +33,7 @@ export function ProductGallery({
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
 
   const galleryList = images.length > 0 ? images : [null];
-  const galleryHeight = Math.min(width * 1.25, 480);
+  const galleryHeight = Math.min(width * (4 / 3), 560);
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = e.nativeEvent.contentOffset.x;
@@ -81,8 +81,8 @@ export function ProductGallery({
         ))}
       </ScrollView>
 
-      {/* Floating Badges (Top Left) */}
-      <View style={[styles.badgeStack, { top: insets.top + 54 }]}>
+      {/* Floating Badges (Bottom Left) */}
+      <View style={styles.badgeStack}>
         {discountPercent > 0 ? (
           <View style={styles.discountBadge}>
             <Text style={styles.discountBadgeText}>-{discountPercent}%</Text>
@@ -174,12 +174,12 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   placeholder: {
-    backgroundColor: "#F3EFE0",
+    backgroundColor: colors.imagePlaceholder,
     alignItems: "center",
     justifyContent: "center",
   },
   placeholderText: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.displayMedium,
     fontSize: typography.size.xl,
     color: colors.brandGray,
     letterSpacing: 2,
@@ -187,19 +187,20 @@ const styles = StyleSheet.create({
   },
   badgeStack: {
     position: "absolute",
-    left: 16,
+    left: 14,
+    bottom: 14,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
   discountBadge: {
-    backgroundColor: colors.destructive,
+    backgroundColor: colors.foreground,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: radius.sm,
   },
   discountBadgeText: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.medium,
     fontSize: typography.size.xs,
     color: colors.brandWhite,
     letterSpacing: 0.5,
@@ -210,13 +211,13 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: colors.brandCream,
     borderWidth: 1,
-    borderColor: "rgba(255, 191, 0, 0.4)",
+    borderColor: colors.amberBorder,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: radius.sm,
   },
   trendBadgeText: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.medium,
     fontSize: 10,
     color: colors.foreground,
     letterSpacing: 0.8,
@@ -225,7 +226,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 14,
     right: 14,
-    backgroundColor: "rgba(26, 26, 26, 0.72)",
+    backgroundColor: colors.overlayScrim,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: radius.full,
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
   },
   fullscreenBackdrop: {
     flex: 1,
-    backgroundColor: "#000000",
+    backgroundColor: colors.lightbox,
   },
   fullscreenHeader: {
     flexDirection: "row",
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
   fullscreenCounter: {
     paddingHorizontal: 12,
     paddingVertical: 4,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: colors.whiteMuted,
     borderRadius: radius.full,
   },
   fullscreenCounterText: {
@@ -263,7 +264,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: colors.whiteMuted,
     alignItems: "center",
     justifyContent: "center",
   },

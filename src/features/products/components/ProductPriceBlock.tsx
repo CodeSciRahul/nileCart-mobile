@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { CheckCircle2, Flame, Star, XCircle } from "lucide-react-native";
-import { colors, radius, typography } from "@/theme";
+import { colors, radius, textStyles, typography } from "@/theme";
 import { formatMoney } from "@/utils/format";
 
 type Props = {
@@ -50,7 +50,7 @@ export function ProductPriceBlock({
             onPress={onScrollToReviews}
             style={styles.ratingPill}
           >
-            <Star size={12} color="#CA8A04" fill="#CA8A04" />
+            <Star size={12} color={colors.star} fill={colors.star} />
             <Text style={styles.ratingScore}>{ratingAverage.toFixed(1)}</Text>
             <Text style={styles.ratingDivider}>•</Text>
             <Text style={styles.ratingCount}>({reviewCount})</Text>
@@ -89,8 +89,8 @@ export function ProductPriceBlock({
           </View>
         ) : stockState.key === "low" ? (
           <View style={[styles.stockBadge, styles.stockBadgeLow]}>
-            <Flame size={14} color="#D97706" />
-            <Text style={[styles.stockText, { color: "#B45309" }]}>
+            <Flame size={14} color={colors.warning} />
+            <Text style={[styles.stockText, { color: colors.warning }]}>
               {stockState.urgency || "Low stock - selling fast!"}
             </Text>
           </View>
@@ -113,8 +113,8 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(232, 224, 200, 0.5)",
-    backgroundColor: colors.brandWhite,
+    borderBottomColor: colors.borderSoft,
+    backgroundColor: colors.background,
   },
   topRow: {
     flexDirection: "row",
@@ -123,11 +123,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   brand: {
-    fontFamily: typography.fontFamily.bold,
-    fontSize: typography.size.xs,
+    ...textStyles.eyebrow,
     color: colors.brandGray,
-    letterSpacing: 1.2,
-    textTransform: "uppercase",
   },
   ratingPill: {
     flexDirection: "row",
@@ -135,13 +132,13 @@ const styles = StyleSheet.create({
     gap: 4,
     backgroundColor: colors.brandCream,
     borderWidth: 1,
-    borderColor: "rgba(255, 191, 0, 0.4)",
+    borderColor: colors.amberBorder,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: radius.full,
   },
   ratingScore: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
     fontSize: typography.size.xs,
     color: colors.foreground,
   },
@@ -155,10 +152,7 @@ const styles = StyleSheet.create({
     color: colors.brandGray,
   },
   title: {
-    fontFamily: typography.fontFamily.bold,
-    fontSize: 20,
-    color: colors.foreground,
-    lineHeight: 26,
+    ...textStyles.pdpTitle,
     marginBottom: 8,
   },
   priceRow: {
@@ -168,9 +162,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   price: {
-    fontFamily: typography.fontFamily.bold,
-    fontSize: 24,
-    color: colors.foreground,
+    ...textStyles.priceLarge,
   },
   mrp: {
     fontFamily: typography.fontFamily.regular,
@@ -179,17 +171,15 @@ const styles = StyleSheet.create({
     textDecorationLine: "line-through",
   },
   discountBadge: {
-    backgroundColor: "rgba(22, 163, 74, 0.12)",
+    backgroundColor: colors.amberMuted,
     paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: radius.sm,
     borderWidth: 1,
-    borderColor: "rgba(22, 163, 74, 0.25)",
+    borderColor: colors.amberBorder,
   },
   discountText: {
-    fontFamily: typography.fontFamily.bold,
-    fontSize: 11,
-    color: colors.success,
+    ...textStyles.discount,
     letterSpacing: 0.4,
   },
   taxNote: {
@@ -211,15 +201,15 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   stockBadgeAvailable: {
-    backgroundColor: "rgba(22, 163, 74, 0.08)",
+    backgroundColor: colors.successMuted,
   },
   stockBadgeLow: {
-    backgroundColor: "rgba(255, 191, 0, 0.15)",
+    backgroundColor: colors.amberMuted,
     borderWidth: 1,
-    borderColor: "rgba(217, 119, 6, 0.2)",
+    borderColor: colors.amberBorder,
   },
   stockBadgeOos: {
-    backgroundColor: "rgba(220, 38, 38, 0.08)",
+    backgroundColor: colors.destructiveMuted,
   },
   stockText: {
     fontFamily: typography.fontFamily.medium,

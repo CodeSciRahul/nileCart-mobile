@@ -82,7 +82,7 @@ export function ProductServices() {
       <View style={styles.guaranteesGrid}>
         <View style={styles.guaranteeItem}>
           <View style={styles.guaranteeIcon}>
-            <Truck size={18} color="#92400E" />
+            <Truck size={18} color={colors.warning} />
           </View>
           <View style={styles.guaranteeTexts}>
             <Text style={styles.guaranteeTitle}>Fast Delivery</Text>
@@ -92,7 +92,7 @@ export function ProductServices() {
 
         <View style={styles.guaranteeItem}>
           <View style={styles.guaranteeIcon}>
-            <RotateCcw size={18} color="#92400E" />
+            <RotateCcw size={18} color={colors.warning} />
           </View>
           <View style={styles.guaranteeTexts}>
             <Text style={styles.guaranteeTitle}>7-Day Returns</Text>
@@ -102,7 +102,7 @@ export function ProductServices() {
 
         <View style={styles.guaranteeItem}>
           <View style={styles.guaranteeIcon}>
-            <ShieldCheck size={18} color="#92400E" />
+            <ShieldCheck size={18} color={colors.warning} />
           </View>
           <View style={styles.guaranteeTexts}>
             <Text style={styles.guaranteeTitle}>100% Genuine</Text>
@@ -112,7 +112,7 @@ export function ProductServices() {
 
         <View style={styles.guaranteeItem}>
           <View style={styles.guaranteeIcon}>
-            <CreditCard size={18} color="#92400E" />
+            <CreditCard size={18} color={colors.warning} />
           </View>
           <View style={styles.guaranteeTexts}>
             <Text style={styles.guaranteeTitle}>Pay on Delivery</Text>
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(232, 224, 200, 0.5)",
+    borderBottomColor: colors.borderSoft,
     backgroundColor: colors.brandWhite,
     gap: 16,
   },
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.medium,
     fontSize: typography.size.sm,
     color: colors.foreground,
-    backgroundColor: "#FDFDFD",
+    backgroundColor: colors.background,
   },
   checkBtn: {
     height: 42,
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "rgba(22, 163, 74, 0.08)",
+    backgroundColor: colors.successMuted,
     padding: 8,
     borderRadius: radius.md,
   },
@@ -213,11 +213,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    backgroundColor: "rgba(255, 245, 209, 0.3)",
+    backgroundColor: colors.creamSoft,
     padding: 10,
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: "rgba(255, 191, 0, 0.2)",
+    borderColor: colors.amberRing,
   },
   guaranteeIcon: {
     width: 32,

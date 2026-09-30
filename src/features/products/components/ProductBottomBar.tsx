@@ -85,7 +85,7 @@ export function ProductBottomBar({
           <ActivityIndicator color={colors.primaryForeground} size="small" />
         ) : (
           <View style={styles.ctaContent}>
-            <ShoppingBag size={18} color={isOutOfStock ? "#9CA3AF" : colors.primaryForeground} />
+            <ShoppingBag size={18} color={isOutOfStock ? colors.disabledText : colors.primaryForeground} />
             <Text
               style={[
                 styles.ctaText,
@@ -113,15 +113,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: colors.brandWhite,
+    backgroundColor: colors.background,
     borderTopWidth: 1,
-    borderTopColor: "rgba(232, 224, 200, 0.8)",
+    borderTopColor: colors.borderSoft,
     paddingTop: 12,
     paddingHorizontal: 16,
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
-    shadowColor: "#000",
+    shadowColor: colors.foreground,
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
@@ -135,12 +135,12 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: colors.brandWhite,
+    backgroundColor: colors.background,
     position: "relative",
   },
   iconBtnActive: {
-    borderColor: "rgba(220, 38, 38, 0.3)",
-    backgroundColor: "rgba(220, 38, 38, 0.04)",
+    borderColor: colors.destructiveBorder,
+    backgroundColor: colors.destructiveMuted,
   },
   badge: {
     position: "absolute",
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     borderColor: colors.brandWhite,
   },
   badgeText: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
     fontSize: 9,
     color: colors.foreground,
     lineHeight: 11,
@@ -165,20 +165,20 @@ const styles = StyleSheet.create({
   ctaButton: {
     flex: 1,
     height: 48,
-    borderRadius: radius.xl,
-    backgroundColor: colors.brandAmber,
+    borderRadius: radius.lg,
+    backgroundColor: colors.primary,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 16,
-    shadowColor: colors.brandAmber,
+    shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 3,
   },
   ctaButtonDisabled: {
-    backgroundColor: "#F3F4F6",
-    borderColor: "#E5E7EB",
+    backgroundColor: colors.disabled,
+    borderColor: colors.border,
     borderWidth: 1,
     shadowOpacity: 0,
     elevation: 0,
@@ -193,20 +193,20 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   ctaText: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
     fontSize: typography.size.sm,
     color: colors.primaryForeground,
     letterSpacing: 0.8,
   },
   ctaTextDisabled: {
-    color: "#9CA3AF",
+    color: colors.disabledText,
   },
   ctaDivider: {
     fontSize: 12,
-    color: "rgba(26, 26, 26, 0.4)",
+    color: colors.inkFaint,
   },
   ctaPrice: {
-    fontFamily: typography.fontFamily.bold,
+    fontFamily: typography.fontFamily.semibold,
     fontSize: typography.size.sm,
     color: colors.primaryForeground,
   },

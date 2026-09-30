@@ -4,16 +4,18 @@ import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
 import {
   useFonts,
-  Roboto_400Regular,
-  Roboto_500Medium,
-  Roboto_700Bold,
-} from "@expo-google-fonts/roboto";
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_600SemiBold,
+  DMSans_700Bold,
+} from "@expo-google-fonts/dm-sans";
+import { Syne_600SemiBold, Syne_700Bold } from "@expo-google-fonts/syne";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useAuthStore } from "@/store/authStore";
 import { ToastHost } from "@/components/ui/ToastHost";
-import { colors } from "@/theme";
+import { colors, typography } from "@/theme";
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
@@ -38,9 +40,12 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    Roboto_400Regular,
-    Roboto_500Medium,
-    Roboto_700Bold,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_600SemiBold,
+    DMSans_700Bold,
+    Syne_600SemiBold,
+    Syne_700Bold,
   });
 
   useEffect(() => {
@@ -63,6 +68,11 @@ export default function RootLayout() {
               screenOptions={{
                 headerShadowVisible: false,
                 headerTintColor: colors.foreground,
+                headerTitleStyle: {
+                  fontFamily: typography.fontFamily.displayMedium,
+                  fontSize: 17,
+                  color: colors.foreground,
+                },
                 headerStyle: { backgroundColor: colors.background },
                 contentStyle: { backgroundColor: colors.background },
               }}

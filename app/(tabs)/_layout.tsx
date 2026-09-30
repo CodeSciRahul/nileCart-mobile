@@ -17,9 +17,10 @@ export default function TabsLayout() {
         tabBarLabelStyle: {
           fontFamily: typography.fontFamily.medium,
           fontSize: 11,
+          letterSpacing: 0.2,
         },
         tabBarStyle: {
-          backgroundColor: colors.brandWhite,
+          backgroundColor: colors.background,
           borderTopColor: colors.border,
           height: 56 + insets.bottom,
           paddingBottom: Math.max(insets.bottom, 8),

@@ -28,7 +28,7 @@ export const Input = forwardRef<TextInput, Props>(function Input(
         {leftSlot}
         <TextInput
           ref={ref}
-          placeholderTextColor={colors.brandGray}
+          placeholderTextColor={colors.mutedForeground}
           style={[styles.input, leftSlot ? styles.inputWithIcon : null, style]}
           {...rest}
         />
@@ -46,11 +46,11 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   field: {
-    minHeight: 52,
-    borderRadius: radius["2xl"],
+    minHeight: 48,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.1)",
-    backgroundColor: "rgba(255, 245, 209, 0.35)",
+    borderColor: colors.input,
+    backgroundColor: colors.background,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: spacing.lg,

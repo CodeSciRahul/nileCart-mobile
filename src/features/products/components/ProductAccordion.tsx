@@ -145,11 +145,11 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.brandWhite,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(232, 224, 200, 0.5)",
+    borderBottomColor: colors.borderSoft,
   },
   accordionItem: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(232, 224, 200, 0.35)",
+    borderBottomColor: colors.borderSoft,
   },
   accordionItemLast: {
     borderBottomWidth: 0,
@@ -198,10 +198,10 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(232, 224, 200, 0.35)",
+    borderBottomColor: colors.borderSoft,
   },
   specRowAlt: {
-    backgroundColor: "rgba(255, 245, 209, 0.15)",
+    backgroundColor: colors.creamSoft,
   },
   specLabel: {
     width: "40%",

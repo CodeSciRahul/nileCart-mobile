@@ -54,19 +54,19 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
-    minHeight: 52,
-    borderRadius: radius["2xl"],
+    minHeight: 48,
+    borderRadius: radius.lg,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
   },
   primary: {
-    backgroundColor: colors.brandAmber,
+    backgroundColor: colors.primary,
   },
   secondary: {
-    backgroundColor: colors.brandCream,
+    backgroundColor: colors.secondary,
     borderWidth: 1,
-    borderColor: "rgba(255, 191, 0, 0.35)",
+    borderColor: colors.amberBorder,
   },
   ghost: {
     backgroundColor: "transparent",
@@ -81,8 +81,9 @@ const styles = StyleSheet.create({
     opacity: 0.55,
   },
   label: {
-    fontFamily: typography.fontFamily.bold,
-    fontSize: typography.size.md,
+    fontFamily: typography.fontFamily.medium,
+    fontSize: typography.size.sm,
+    letterSpacing: 0.4,
   },
   primaryLabel: {
     color: colors.primaryForeground,
