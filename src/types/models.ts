@@ -109,7 +109,7 @@ export type User = {
   mobileNumber?: string;
   gender?: string;
   birthday?: string;
-  avatar?: string | { url?: string };
+  avatar?: string | { url?: string; key?: string } | null;
   role?: string;
 };
 

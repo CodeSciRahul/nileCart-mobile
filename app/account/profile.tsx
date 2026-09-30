@@ -14,7 +14,8 @@ import { useUiStore } from "@/store/uiStore";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { colors, spacing, textStyles, typography } from "@/theme";
+import { AvatarUpload } from "@/components/account/AvatarUpload";
+import { colors, radius, spacing, textStyles, typography } from "@/theme";
 
 const GENDERS = ["Male", "Female", "Other", "Prefer not to say"] as const;
 
@@ -77,6 +78,11 @@ export default function ProfileRoute() {
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.kicker}>Profile</Text>
       <Text style={styles.heading}>Your details</Text>
+
+      <View style={styles.avatarCard}>
+        <AvatarUpload displayName={name} size={76} showDetails={true} />
+      </View>
+
       <Text style={styles.label}>Email</Text>
       <Text style={styles.value}>{user?.email || "—"}</Text>
 
@@ -149,6 +155,19 @@ const styles = StyleSheet.create({
   heading: {
     ...textStyles.sectionTitle,
     marginBottom: spacing.sm,
+  },
+  avatarCard: {
+    backgroundColor: colors.card,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    marginBottom: spacing.xs,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
   },
   label: {
     marginTop: spacing.sm,

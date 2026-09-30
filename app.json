@@ -17,7 +17,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.nilescart.mobile",
       "infoPlist": {
-        "CFBundleDisplayName": "Nilescart"
+        "CFBundleDisplayName": "Nilescart",
+        "NSPhotoLibraryUsageDescription": "Allow Nilescart to access your photos to set your profile picture.",
+        "NSCameraUsageDescription": "Allow Nilescart to access your camera to take a profile picture."
       }
     },
     "android": {
@@ -39,7 +41,14 @@
       "expo-secure-store",
       "expo-font",
       "expo-image",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Nilescart to access your photos to set your profile picture.",
+          "cameraPermission": "Allow Nilescart to access your camera to take a profile picture."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

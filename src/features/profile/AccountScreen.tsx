@@ -15,6 +15,7 @@ import { queryKeys } from "@/constants/queryKeys";
 import { getMyOrders } from "@/services/checkoutService";
 import { useAuthStore } from "@/store/authStore";
 import { Button } from "@/components/ui/Button";
+import { AvatarUpload } from "@/components/account/AvatarUpload";
 import { getImageUrl } from "@/utils/format";
 import { colors, radius, spacing, textStyles, typography } from "@/theme";
 
@@ -124,13 +125,7 @@ export function AccountScreen() {
       <Text style={styles.kicker}>My account</Text>
 
       <View style={styles.identity}>
-        <View style={styles.avatar}>
-          {avatarUri ? (
-            <Image source={{ uri: avatarUri }} style={styles.avatarImage} contentFit="cover" />
-          ) : (
-            <Text style={styles.avatarInitials}>{initials(displayName, user?.email)}</Text>
-          )}
-        </View>
+        <AvatarUpload displayName={displayName} size={58} showDetails={false} />
         <View style={styles.identityCopy}>
           <Text style={styles.hello}>Hello</Text>
           <Text style={styles.name} numberOfLines={1}>
