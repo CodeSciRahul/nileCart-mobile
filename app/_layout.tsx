@@ -70,7 +70,7 @@ export default function RootLayout() {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen
                 name="product/[slug]"
-                options={{ title: "Product" }}
+                options={{ headerShown: false }}
               />
               <Stack.Screen name="shop/[slug]" options={{ title: "Shop" }} />
               <Stack.Screen
