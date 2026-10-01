@@ -93,7 +93,6 @@ export const uploadProfileImage = async (
   if (!presign.uploadUrl) {
     throw new Error("Could not obtain secure upload URL.");
   }
-
   await putFileToS3({
     uploadUrl: presign.uploadUrl,
     uri,

@@ -112,7 +112,7 @@ export function AuthForm({ onSuccess }: Props) {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior="padding"
       style={styles.wrap}
     >
       <Text style={styles.heading}>

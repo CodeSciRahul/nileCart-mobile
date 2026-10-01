@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/Input";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { AvatarUpload } from "@/components/account/AvatarUpload";
 import { colors, radius, spacing, textStyles, typography } from "@/theme";
+import { KeyboardAvoidingView } from "react-native";
 
 const GENDERS = ["Male", "Female", "Other", "Prefer not to say"] as const;
 
@@ -75,68 +76,73 @@ export default function ProfileRoute() {
   }
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.kicker}>Profile</Text>
-      <Text style={styles.heading}>Your details</Text>
+    <KeyboardAvoidingView behavior="padding" style={styles.screen} 
+    contentContainerStyle={{paddingBottom: 180}}>
 
-      <View style={styles.avatarCard}>
-        <AvatarUpload displayName={name} size={76} showDetails={true} />
-      </View>
+      <ScrollView contentContainerStyle={[styles.content, {paddingBottom: 180}]}>
+        <Text style={styles.kicker}>Profile</Text>
+        <Text style={styles.heading}>Your details</Text>
 
-      <Text style={styles.label}>Email</Text>
-      <Text style={styles.value}>{user?.email || "—"}</Text>
+        <View style={styles.avatarCard}>
+          <AvatarUpload displayName={name} size={76} showDetails={true} />
+        </View>
 
-      <Input
-        label="Full name"
-        value={name}
-        onChangeText={setName}
-        placeholder="Your name"
-      />
-      <Input
-        label="Mobile number"
-        value={mobileNumber}
-        onChangeText={setMobileNumber}
-        keyboardType="number-pad"
-        placeholder="10-digit mobile number"
-      />
-      <Input
-        label="Birthday"
-        value={birthday}
-        onChangeText={setBirthday}
-        placeholder="YYYY-MM-DD"
-        autoCapitalize="none"
-      />
+        <Text style={styles.label}>Email</Text>
+        <Text style={styles.value}>{user?.email || "—"}</Text>
 
-      <Text style={styles.label}>Gender</Text>
-      <View style={styles.genderRow}>
-        {GENDERS.map((option) => (
-          <Pressable
-            key={option}
-            onPress={() => setGender(option)}
-            style={[
-              styles.genderChip,
-              gender === option && styles.genderChipActive,
-            ]}
-          >
-            <Text
+        <Input
+          label="Full name"
+          value={name}
+          onChangeText={setName}
+          placeholder="Your name"
+        />
+        <Input
+          label="Mobile number"
+          value={mobileNumber}
+          onChangeText={setMobileNumber}
+          keyboardType="number-pad"
+          placeholder="10-digit mobile number"
+        />
+        <Input
+          label="Birthday"
+          value={birthday}
+          onChangeText={setBirthday}
+          placeholder="YYYY-MM-DD"
+          autoCapitalize="none"
+        />
+
+        <Text style={styles.label}>Gender</Text>
+        <View style={styles.genderRow}>
+          {GENDERS.map((option) => (
+            <Pressable
+              key={option}
+              onPress={() => setGender(option)}
               style={[
-                styles.genderLabel,
-                gender === option && styles.genderLabelActive,
+                styles.genderChip,
+                gender === option && styles.genderChipActive,
               ]}
             >
-              {option}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
+              <Text
+                style={[
+                  styles.genderLabel,
+                  gender === option && styles.genderLabelActive,
+                ]}
+              >
+                {option}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
 
-      <Button
-        title="Save changes"
-        loading={updateMutation.isPending}
-        disabled={updateMutation.isPending}
-        onPress={() => updateMutation.mutate()}
-      />
-    </ScrollView>
+        <Button
+          title="Save changes"
+          loading={updateMutation.isPending}
+          disabled={updateMutation.isPending}
+          onPress={() => updateMutation.mutate()}
+        />
+      </ScrollView>
+    </KeyboardAvoidingView>
+
   );
 }
 
