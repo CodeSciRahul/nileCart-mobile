@@ -21,6 +21,7 @@ import {
   MapPin,
   Package,
   RotateCcw,
+  Star,
   Truck,
   XCircle,
 } from "lucide-react-native";
@@ -33,7 +34,10 @@ import { Button } from "@/components/ui/Button";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { formatMoney, getImageUrl, getOrderItemImage } from "@/utils/format";
 import { colors, radius, shadows, spacing, textStyles, typography } from "@/theme";
-import type { Order } from "@/types/models";
+import { OrderItemReviewButton, getOrderItemProductId } from "@/components/reviews/OrderItemReviewButton";
+import { WriteReviewModal } from "@/components/reviews/WriteReviewModal";
+import type { Review } from "@/services/reviewService";
+import type { Order, OrderItem } from "@/types/models";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 function canCancel(order: Order) {
@@ -92,6 +96,15 @@ export default function OrderDetailRoute() {
   const [reason, setReason] = useState("");
   const busyRef = useRef(false);
   const [showCancelBlock, setShowCancelBlock] = useState(false);
+  const [reviewModalData, setReviewModalData] = useState<{
+    visible: boolean;
+    item: OrderItem | null;
+    existingReview?: Review | null;
+  }>({
+    visible: false,
+    item: null,
+    existingReview: null,
+  });
 
   const orderQuery = useQuery({
     queryKey: queryKeys.orders({ id: String(id) }),
@@ -302,6 +315,21 @@ export default function OrderDetailRoute() {
           </View>
         ) : null}
 
+        {/* ── Delivered Feedback Banner ─────────────────────────────────── */}
+        {status === "delivered" ? (
+          <View style={styles.deliveredFeedbackCard}>
+            <View style={styles.deliveredFeedbackIconWrap}>
+              <Star size={18} color={colors.brandAmber} fill={colors.brandAmber} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.deliveredFeedbackTitle}>How was your delivery?</Text>
+              <Text style={styles.deliveredFeedbackSubtitle}>
+                Rate and review your items below to share fit & styling impressions with other shoppers.
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
         {/* ── Items Card ──────────────────────────────────────────────────── */}
         <View style={styles.card}>
           <SectionLabel title={`Items (${(order.items ?? []).length})`} />
@@ -311,45 +339,61 @@ export default function OrderDetailRoute() {
               <View
                 key={`${item.variantSku}-${index}`}
                 style={[
-                  styles.itemRow,
+                  styles.itemBlock,
                   index < (order.items?.length ?? 0) - 1 && styles.itemRowBorder,
                 ]}
               >
-                {/* Thumb */}
-                <View style={styles.itemThumbWrap}>
-                  {imageUri ? (
-                    <Image
-                      source={{ uri: imageUri }}
-                      style={styles.itemThumb}
-                      contentFit="cover"
-                      transition={150}
-                    />
-                  ) : (
-                    <View style={[styles.itemThumb, styles.itemThumbFallback]}>
-                      <Package size={16} color={colors.brandStone} strokeWidth={1.5} />
-                    </View>
-                  )}
-                </View>
-
-                {/* Details */}
-                <View style={styles.itemDetails}>
-                  <Text style={styles.itemTitle} numberOfLines={2}>
-                    {item.title || item.product?.title || "Item"}
-                  </Text>
-                  <View style={styles.itemMetaRow}>
-                    {item.variantSku ? (
-                      <View style={styles.skuChip}>
-                        <Text style={styles.skuText}>{item.variantSku}</Text>
+                <View style={styles.itemRow}>
+                  {/* Thumb */}
+                  <View style={styles.itemThumbWrap}>
+                    {imageUri ? (
+                      <Image
+                        source={{ uri: imageUri }}
+                        style={styles.itemThumb}
+                        contentFit="cover"
+                        transition={150}
+                      />
+                    ) : (
+                      <View style={[styles.itemThumb, styles.itemThumbFallback]}>
+                        <Package size={16} color={colors.brandStone} strokeWidth={1.5} />
                       </View>
-                    ) : null}
-                    <Text style={styles.qtyText}>Qty: {item.quantity ?? 1}</Text>
+                    )}
                   </View>
+
+                  {/* Details */}
+                  <View style={styles.itemDetails}>
+                    <Text style={styles.itemTitle} numberOfLines={2}>
+                      {item.title || item.product?.title || "Item"}
+                    </Text>
+                    <View style={styles.itemMetaRow}>
+                      {item.variantSku ? (
+                        <View style={styles.skuChip}>
+                          <Text style={styles.skuText}>{item.variantSku}</Text>
+                        </View>
+                      ) : null}
+                      <Text style={styles.qtyText}>Qty: {item.quantity ?? 1}</Text>
+                    </View>
+                  </View>
+
+                  {/* Price */}
+                  {item.price != null ? (
+                    <Text style={styles.itemPrice}>{formatMoney(item.price)}</Text>
+                  ) : null}
                 </View>
 
-                {/* Price */}
-                {item.price != null ? (
-                  <Text style={styles.itemPrice}>{formatMoney(item.price)}</Text>
-                ) : null}
+                {/* Delivered Item Review Action */}
+                <OrderItemReviewButton
+                  item={item}
+                  orderId={order._id}
+                  orderStatus={status}
+                  onOpenReview={(selectedItem, existingReview) => {
+                    setReviewModalData({
+                      visible: true,
+                      item: selectedItem,
+                      existingReview: existingReview || null,
+                    });
+                  }}
+                />
               </View>
             );
           })}
@@ -464,6 +508,32 @@ export default function OrderDetailRoute() {
         ) : null}
       </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* ── Review Modal ─────────────────────────────────────────────────── */}
+      {reviewModalData.visible && reviewModalData.item ? (
+        <WriteReviewModal
+          visible={reviewModalData.visible}
+          onClose={() =>
+            setReviewModalData({
+              visible: false,
+              item: null,
+              existingReview: null,
+            })
+          }
+          productId={getOrderItemProductId(reviewModalData.item) || ""}
+          productTitle={
+            reviewModalData.item.title ||
+            reviewModalData.item.product?.title ||
+            "Product"
+          }
+          productImage={getOrderItemImage(reviewModalData.item)}
+          orderId={order._id}
+          existingReview={reviewModalData.existingReview}
+          onSuccess={() => {
+            orderQuery.refetch();
+          }}
+        />
+      ) : null}
     </View>
   );
 }
@@ -644,12 +714,47 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 
+  // Delivered feedback banner
+  deliveredFeedbackCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(230, 168, 0, 0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(230, 168, 0, 0.25)",
+    borderRadius: radius.xl,
+    padding: spacing.md,
+    gap: spacing.md,
+    marginBottom: spacing.xs,
+  },
+  deliveredFeedbackIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.full,
+    backgroundColor: colors.brandCream,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  deliveredFeedbackTitle: {
+    fontFamily: typography.fontFamily.semibold,
+    fontSize: 13,
+    color: colors.foreground,
+  },
+  deliveredFeedbackSubtitle: {
+    fontFamily: typography.fontFamily.regular,
+    fontSize: 11,
+    color: colors.brandGray,
+    lineHeight: 16,
+    marginTop: 2,
+  },
+
   // Items
+  itemBlock: {
+    paddingVertical: spacing.sm,
+  },
   itemRow: {
     flexDirection: "row",
     alignItems: "flex-start",
     gap: spacing.md,
-    paddingVertical: spacing.sm,
   },
   itemRowBorder: {
     borderBottomWidth: 1,

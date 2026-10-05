@@ -2,7 +2,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
-  Share,
   StyleSheet,
   View,
 } from "react-native";
@@ -17,6 +16,7 @@ import { useToggleWishlist, useWishlistQuery } from "@/hooks/useWishlist";
 import { useUiStore } from "@/store/uiStore";
 import { getDiscountPercent } from "@/utils/format";
 import { getColorOptions, getGalleryMedia, getStockState } from "@/utils/product";
+import { shareProduct } from "@/utils/productShare";
 import { colors } from "@/theme";
 import type { ProductVariant } from "@/types/models";
 
@@ -117,14 +117,14 @@ export function ProductDetailScreen({ wrapSafeArea = false }: Props = {}) {
 
   const handleShare = async () => {
     if (!product) return;
-    try {
-      await Share.share({
-        title: product.title,
-        message: `Check out ${product.title} on NileCart!`,
-      });
-    } catch {
-      // User cancelled share
-    }
+    await shareProduct({
+      product,
+      selectedVariant,
+      colorCount: colorOptions.length,
+      sizes: sizeVariants
+        .map((v) => v.size)
+        .filter((s): s is string => Boolean(s)),
+    });
   };
 
   const handleScrollToReviews = useCallback(() => {

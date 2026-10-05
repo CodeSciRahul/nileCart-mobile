@@ -4,15 +4,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Star } from "lucide-react-native";
 import { queryKeys } from "@/constants/queryKeys";
 import {
-  createReview,
   getProductReviews,
+  getReviewEligibility,
   type Review,
 } from "@/services/reviewService";
 import { useAuthStore } from "@/store/authStore";
 import { useUiStore } from "@/store/uiStore";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { WriteReviewModal } from "@/components/reviews/WriteReviewModal";
 import { colors, radius, typography } from "@/theme";
+import { getImageUrl } from "@/utils/format";
 import { router } from "expo-router";
 import type { Product } from "@/types/models";
 
@@ -40,10 +41,7 @@ export function ProductReviewsSection({ product }: Props) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const showToast = useUiStore((s) => s.showToast);
   const queryClient = useQueryClient();
-  const [rating, setRating] = useState(5);
-  const [title, setTitle] = useState("");
-  const [comment, setComment] = useState("");
-  const [showForm, setShowForm] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const reviewsQuery = useQuery({
     queryKey: queryKeys.reviews.byProduct(product._id),
@@ -51,30 +49,15 @@ export function ProductReviewsSection({ product }: Props) {
     enabled: Boolean(product._id),
   });
 
-  const createMutation = useMutation({
-    mutationFn: () =>
-      createReview({
-        productId: product._id,
-        rating,
-        title: title.trim() || undefined,
-        comment: comment.trim() || undefined,
-      }),
-    onSuccess: async () => {
-      setTitle("");
-      setComment("");
-      setShowForm(false);
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.reviews.byProduct(product._id),
-      });
-      showToast("Review submitted successfully", "success");
-    },
-    onError: (error: unknown) => {
-      showToast(
-        error instanceof Error ? error.message : "Could not submit review.",
-        "error"
-      );
-    },
+  const eligibilityQuery = useQuery({
+    queryKey: queryKeys.reviews.eligibility(product._id),
+    queryFn: () => getReviewEligibility(product._id),
+    enabled: isAuthenticated && Boolean(product._id),
   });
+
+  const eligibility = eligibilityQuery.data;
+  const hasPurchased = eligibility?.hasPurchased;
+  const existingReview = eligibility?.existingReview;
 
   const reviews = (reviewsQuery.data?.reviews || []) as Review[];
   const average =
@@ -177,58 +160,74 @@ export function ProductReviewsSection({ product }: Props) {
         </View>
       )}
 
-      {/* Review CTA or Form */}
+      {/* Review CTA / Eligibility Area */}
       {isAuthenticated ? (
         <View style={styles.ctaBox}>
-          <Button
-            title={showForm ? "Cancel Review" : "Write a Customer Review"}
-            variant="secondary"
-            onPress={() => setShowForm((v) => !v)}
-          />
-
-          {showForm ? (
-            <View style={styles.form}>
-              <Text style={styles.formTitle}>Rate this product</Text>
-              <View style={styles.ratingPicker}>
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <Pressable
-                    key={value}
-                    hitSlop={8}
-                    onPress={() => setRating(value)}
-                  >
-                    <Star
-                      size={32}
-                      color={colors.star}
-                      fill={value <= rating ? colors.star : "transparent"}
-                    />
-                  </Pressable>
-                ))}
-              </View>
-
-              <Input
-                label="Review Title"
-                placeholder="e.g. Stunning fit and premium material"
-                value={title}
-                onChangeText={setTitle}
-              />
-
-              <Input
-                label="Your Experience"
-                placeholder="Describe the fabric feel, drape, sizing accuracy, and overall look..."
-                value={comment}
-                onChangeText={setComment}
-                multiline
-                style={{ minHeight: 90, textAlignVertical: "top" }}
-              />
-
-              <Button
-                title="Submit Review"
-                loading={createMutation.isPending}
-                disabled={createMutation.isPending}
-                onPress={() => createMutation.mutate()}
-              />
+          {eligibilityQuery.isLoading ? (
+            <View style={styles.eligibilityLoading}>
+              <Text style={styles.eligibilityLoadingText}>
+                Checking review eligibility…
+              </Text>
             </View>
-          ) : null}
+          ) : hasPurchased ? (
+            existingReview ? (
+              <View style={styles.userReviewCard}>
+                <View style={styles.userReviewHeader}>
+                  <View style={styles.verifiedRow}>
+                    <CheckCircle2 size={13} color="#15803D" strokeWidth={2.2} />
+                    <Text style={styles.userReviewBadge}>Your Verified Review</Text>
+                  </View>
+                  <Stars value={existingReview.rating} size={14} />
+                </View>
+                {existingReview.title ? (
+                  <Text style={styles.userReviewTitle}>
+                    {existingReview.title}
+                  </Text>
+                ) : null}
+                {existingReview.comment ? (
+                  <Text style={styles.userReviewComment}>
+                    {existingReview.comment}
+                  </Text>
+                ) : null}
+                <Button
+                  title="Edit Your Review"
+                  variant="secondary"
+                  onPress={() => setShowReviewModal(true)}
+                  style={{ marginTop: 4 }}
+                />
+              </View>
+            ) : (
+              <View style={styles.purchasedCard}>
+                <View style={{ flex: 1, gap: 2 }}>
+                  <View style={styles.verifiedRow}>
+                    <CheckCircle2 size={12} color="#15803D" strokeWidth={2.2} />
+                    <Text style={styles.verifiedBuyerText}>Verified Purchase</Text>
+                  </View>
+                  <Text style={styles.purchasedTitle}>
+                    Share your experience with this piece
+                  </Text>
+                </View>
+                <Button
+                  title="Write Review"
+                  onPress={() => setShowReviewModal(true)}
+                />
+              </View>
+            )
+          ) : (
+            <View style={styles.unpurchasedCard}>
+              <Text style={styles.unpurchasedTitle}>Verified Buyers Only</Text>
+              <Text style={styles.unpurchasedBody}>
+                Only customers who have purchased and received this product can leave a review. Once your order is delivered, you can review it anytime.
+              </Text>
+              <Pressable
+                onPress={() => router.push("/account/orders")}
+                style={styles.ordersLink}
+                accessibilityRole="button"
+              >
+                <Text style={styles.ordersLinkText}>View Your Orders →</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
       ) : (
         <View style={styles.ctaBox}>
@@ -239,6 +238,21 @@ export function ProductReviewsSection({ product }: Props) {
           />
         </View>
       )}
+
+      {/* Write / Edit Review Modal */}
+      <WriteReviewModal
+        visible={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        productId={product._id}
+        productTitle={product.title}
+        productImage={getImageUrl(product.images?.[0])}
+        orderId={eligibility?.orderId}
+        existingReview={existingReview}
+        onSuccess={() => {
+          reviewsQuery.refetch();
+          eligibilityQuery.refetch();
+        }}
+      />
     </View>
   );
 }
@@ -418,21 +432,91 @@ const styles = StyleSheet.create({
     marginTop: 6,
     gap: 12,
   },
-  form: {
-    padding: 16,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.creamSoft,
-    gap: 12,
+  eligibilityLoading: {
+    paddingVertical: 12,
+    alignItems: "center",
   },
-  formTitle: {
-    fontFamily: typography.fontFamily.bold,
-    fontSize: typography.size.sm,
+  eligibilityLoadingText: {
+    fontFamily: typography.fontFamily.regular,
+    fontSize: 12,
+    color: colors.brandGray,
+  },
+  userReviewCard: {
+    backgroundColor: colors.brandCream,
+    borderRadius: radius.xl,
+    padding: 16,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: "rgba(34, 197, 94, 0.2)",
+  },
+  userReviewHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  userReviewBadge: {
+    fontFamily: typography.fontFamily.semibold,
+    fontSize: 12,
+    color: "#15803D",
+  },
+  userReviewTitle: {
+    fontFamily: typography.fontFamily.semibold,
+    fontSize: 13,
     color: colors.foreground,
   },
-  ratingPicker: {
+  userReviewComment: {
+    fontFamily: typography.fontFamily.regular,
+    fontSize: 12,
+    color: colors.brandGray,
+    lineHeight: 17,
+  },
+  purchasedCard: {
     flexDirection: "row",
-    gap: 8,
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: colors.brandCream,
+    borderRadius: radius.xl,
+    padding: 14,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: "rgba(230, 168, 0, 0.25)",
+  },
+  verifiedBuyerText: {
+    fontFamily: typography.fontFamily.semibold,
+    fontSize: 11,
+    color: "#15803D",
+  },
+  purchasedTitle: {
+    fontFamily: typography.fontFamily.medium,
+    fontSize: 12,
+    color: colors.foreground,
+  },
+  unpurchasedCard: {
+    backgroundColor: colors.brandCream,
+    borderRadius: radius.xl,
+    padding: 16,
+    gap: 6,
+    borderWidth: 1,
+    borderColor: colors.borderSoft,
+  },
+  unpurchasedTitle: {
+    fontFamily: typography.fontFamily.semibold,
+    fontSize: 13,
+    color: colors.foreground,
+  },
+  unpurchasedBody: {
+    fontFamily: typography.fontFamily.regular,
+    fontSize: 12,
+    color: colors.brandGray,
+    lineHeight: 18,
+  },
+  ordersLink: {
+    alignSelf: "flex-start",
+    marginTop: 4,
+  },
+  ordersLinkText: {
+    fontFamily: typography.fontFamily.semibold,
+    fontSize: 12,
+    color: colors.brandAmber,
   },
 });

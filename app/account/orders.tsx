@@ -3,7 +3,7 @@ import { Image } from "expo-image";
 import { FlashList } from "@shopify/flash-list";
 import { useQuery } from "@tanstack/react-query";
 import { router, type Href } from "expo-router";
-import { ChevronRight, Package, ShoppingBag } from "lucide-react-native";
+import { ChevronRight, Package, ShoppingBag, Star } from "lucide-react-native";
 import { queryKeys } from "@/constants/queryKeys";
 import { getMyOrders } from "@/services/checkoutService";
 import { useAuthStore } from "@/store/authStore";
@@ -118,6 +118,17 @@ function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
           <ChevronRight size={16} color={colors.brandStone} strokeWidth={1.75} />
         </View>
       </View>
+
+      {/* Delivered review prompt */}
+      {status === "delivered" ? (
+        <View style={styles.deliveredPromptRow}>
+          <View style={styles.deliveredPromptLeft}>
+            <Star size={12} color={colors.brandAmber} fill={colors.brandAmber} />
+            <Text style={styles.deliveredPromptText}>Delivered · Rate & review items</Text>
+          </View>
+          <ChevronRight size={13} color={colors.brandAmber} strokeWidth={2} />
+        </View>
+      ) : null}
     </Pressable>
   );
 }
@@ -380,5 +391,28 @@ const styles = StyleSheet.create({
     fontSize: typography.size.md,
     color: colors.foreground,
     letterSpacing: -0.2,
+  },
+  deliveredPromptRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "rgba(230, 168, 0, 0.08)",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(230, 168, 0, 0.18)",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: 9,
+    borderBottomLeftRadius: radius.xl,
+    borderBottomRightRadius: radius.xl,
+  },
+  deliveredPromptLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  deliveredPromptText: {
+    fontFamily: typography.fontFamily.semibold,
+    fontSize: 11,
+    color: colors.brandInk,
+    letterSpacing: 0.1,
   },
 });

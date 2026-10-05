@@ -16,6 +16,7 @@ export const queryKeys = {
   },
   reviews: {
     byProduct: (productId: string) => ["reviews", productId] as const,
+    eligibility: (productId: string) => ["reviews", "eligibility", productId] as const,
   },
   cart: ["cart"] as const,
   wishlist: ["wishlist"] as const,
