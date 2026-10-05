@@ -181,6 +181,31 @@ export type AddressesResponse = {
   addresses?: Address[];
 };
 
+export type OrderItem = {
+  _id?: string;
+  title?: string;
+  quantity?: number;
+  price?: number;
+  variantSku?: string;
+  image?: ProductImage;
+  images?: ProductImage[];
+  imageUrl?: string | null;
+  thumbnail?: ProductImage;
+  product?: {
+    _id?: string;
+    title?: string;
+    slug?: string;
+    image?: ProductImage;
+    images?: ProductImage[];
+    imageUrl?: string | null;
+  };
+  variant?: {
+    sku?: string;
+    image?: ProductImage;
+    images?: ProductImage[];
+  };
+};
+
 export type Order = {
   _id: string;
   orderNumber?: string;
@@ -193,18 +218,7 @@ export type Order = {
   subtotal?: number;
   shippingFee?: number;
   discount?: number;
-  items?: Array<{
-    title?: string;
-    quantity?: number;
-    price?: number;
-    variantSku?: string;
-    product?: {
-      _id?: string;
-      title?: string;
-      slug?: string;
-      images?: Array<string | { url?: string | null }>;
-    };
-  }>;
+  items?: OrderItem[];
   shippingAddress?: {
     fullName?: string;
     mobileNumber?: string;

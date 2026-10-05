@@ -8,7 +8,7 @@ import { queryKeys } from "@/constants/queryKeys";
 import { getMyOrders } from "@/services/checkoutService";
 import { useAuthStore } from "@/store/authStore";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { formatMoney, getImageUrl } from "@/utils/format";
+import { formatMoney, getOrderItemImage } from "@/utils/format";
 import { colors, radius, shadows, spacing, textStyles, typography } from "@/theme";
 import { Button } from "@/components/ui/Button";
 import type { Order } from "@/types/models";
@@ -55,7 +55,8 @@ function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
 
   const firstItem = order.items?.[0];
   const moreCount = (order.items?.length ?? 0) - 1;
-  const thumbUri = getImageUrl(firstItem?.product?.images?.[0]);
+  const itemWithImage = order.items?.find((it) => getOrderItemImage(it)) || firstItem;
+  const thumbUri = getOrderItemImage(itemWithImage);
 
   return (
     <Pressable
@@ -87,7 +88,12 @@ function OrderCard({ order, onPress }: { order: Order; onPress: () => void }) {
       <View style={styles.cardBody}>
         <View style={styles.thumbWrap}>
           {thumbUri ? (
-            <Image source={{ uri: thumbUri }} style={styles.thumb} contentFit="cover" />
+            <Image
+              source={{ uri: thumbUri }}
+              style={styles.thumb}
+              contentFit="cover"
+              transition={150}
+            />
           ) : (
             <View style={[styles.thumb, styles.thumbFallback]}>
               <ShoppingBag size={18} color={colors.brandStone} strokeWidth={1.5} />

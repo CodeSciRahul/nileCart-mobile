@@ -30,7 +30,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useUiStore } from "@/store/uiStore";
 import { Button } from "@/components/ui/Button";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
-import { formatMoney, getImageUrl } from "@/utils/format";
+import { formatMoney, getImageUrl, getOrderItemImage } from "@/utils/format";
 import { colors, radius, shadows, spacing, textStyles, typography } from "@/theme";
 import type { Order } from "@/types/models";
 
@@ -303,7 +303,7 @@ export default function OrderDetailRoute() {
         <View style={styles.card}>
           <SectionLabel title={`Items (${(order.items ?? []).length})`} />
           {(order.items ?? []).map((item, index) => {
-            const imageUri = getImageUrl(item.product?.images?.[0]);
+            const imageUri = getOrderItemImage(item);
             return (
               <View
                 key={`${item.variantSku}-${index}`}
