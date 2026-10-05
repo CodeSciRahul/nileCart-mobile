@@ -26,12 +26,16 @@ export const radius = {
 
 export const typography = {
   fontFamily: {
-    regular: "DMSans_400Regular",
-    medium: "DMSans_500Medium",
-    semibold: "DMSans_600SemiBold",
-    bold: "DMSans_700Bold",
-    display: "Syne_700Bold",
-    displayMedium: "Syne_600SemiBold",
+    thin: "Poppins-Thin",
+    light: "Poppins-Light",
+    regular: "Poppins-Regular",
+    medium: "Poppins-Medium",
+    semibold: "Poppins-SemiBold",
+    bold: "Poppins-Bold",
+    extrabold: "Poppins-ExtraBold",
+    black: "Poppins-Black",
+    display: "Poppins-Bold",
+    displayMedium: "Poppins-SemiBold",
   },
   size: {
     xs: 11,

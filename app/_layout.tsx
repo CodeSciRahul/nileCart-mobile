@@ -2,14 +2,7 @@ import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
-import {
-  useFonts,
-  DMSans_400Regular,
-  DMSans_500Medium,
-  DMSans_600SemiBold,
-  DMSans_700Bold,
-} from "@expo-google-fonts/dm-sans";
-import { Syne_600SemiBold, Syne_700Bold } from "@expo-google-fonts/syne";
+import { useFonts } from "expo-font";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -44,12 +37,24 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    DMSans_400Regular,
-    DMSans_500Medium,
-    DMSans_600SemiBold,
-    DMSans_700Bold,
-    Syne_600SemiBold,
-    Syne_700Bold,
+    "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
+    "Poppins-Light": require("../assets/fonts/Poppins-Light.ttf"),
+    "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
+    "Poppins-Medium": require("../assets/fonts/Poppins-Medium.ttf"),
+    "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
+    "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
+    "Poppins-ExtraBold": require("../assets/fonts/Poppins-ExtraBold.ttf"),
+    "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
+    "Poppins-Italic": require("../assets/fonts/Poppins-Italic.ttf"),
+    "Poppins-MediumItalic": require("../assets/fonts/Poppins-MediumItalic.ttf"),
+    "Poppins-SemiBoldItalic": require("../assets/fonts/Poppins-SemiBoldItalic.ttf"),
+    "Poppins-BoldItalic": require("../assets/fonts/Poppins-BoldItalic.ttf"),
+    DMSans_400Regular: require("../assets/fonts/Poppins-Regular.ttf"),
+    DMSans_500Medium: require("../assets/fonts/Poppins-Medium.ttf"),
+    DMSans_600SemiBold: require("../assets/fonts/Poppins-SemiBold.ttf"),
+    DMSans_700Bold: require("../assets/fonts/Poppins-Bold.ttf"),
+    Syne_600SemiBold: require("../assets/fonts/Poppins-SemiBold.ttf"),
+    Syne_700Bold: require("../assets/fonts/Poppins-Bold.ttf"),
   });
 
   useEffect(() => {

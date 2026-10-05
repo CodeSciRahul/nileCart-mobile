@@ -11,7 +11,7 @@ import { useAuthStore } from "@/store/authStore";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { formatMoney, getProductImageUrls } from "@/utils/format";
-import { colors, spacing, textStyles, typography } from "@/theme";
+import { colors, radius, spacing, textStyles, typography } from "@/theme";
 import type { CartItem } from "@/types/models";
 
 export function CartScreen() {
@@ -86,23 +86,47 @@ export function CartScreen() {
           );
           const price = variant?.price ?? product?.price;
 
+          const openProduct = () => {
+            if (product?.slug) {
+              router.push(`/product/${product.slug}`);
+            }
+          };
+
           return (
             <View style={styles.row}>
-              {image ? (
-                <Image source={{ uri: image }} style={styles.thumb} contentFit="cover" />
-              ) : (
-                <View style={[styles.thumb, styles.placeholder]} />
-              )}
+              <Pressable
+                onPress={openProduct}
+                disabled={!product?.slug}
+                accessibilityRole="button"
+                accessibilityLabel={product?.title || "Product image"}
+                style={({ pressed }) => [styles.thumbWrap, pressed && { opacity: 0.85 }]}
+              >
+                {image ? (
+                  <Image source={{ uri: image }} style={styles.thumb} contentFit="cover" />
+                ) : (
+                  <View style={[styles.thumb, styles.placeholder]} />
+                )}
+              </Pressable>
+
               <View style={styles.meta}>
-                <Text style={styles.itemTitle} numberOfLines={2}>
-                  {product?.title || "Product"}
-                </Text>
-                <Text style={styles.variant}>
-                  {[variant?.color, variant?.size, item.variantSku]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </Text>
-                <Text style={styles.price}>{formatMoney(price)}</Text>
+                <Pressable
+                  onPress={openProduct}
+                  disabled={!product?.slug}
+                  accessibilityRole="button"
+                  accessibilityLabel={product?.title || "Product details"}
+                  style={({ pressed }) => [styles.metaPressable, pressed && { opacity: 0.75 }]}
+                >
+                  <Text style={styles.itemTitle} numberOfLines={2}>
+                    {product?.title || "Product"}
+                  </Text>
+                  <Text style={styles.variant}>
+                    {[variant?.color, variant?.size, item.variantSku]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </Text>
+                  <Text style={styles.price}>{formatMoney(price)}</Text>
+                </Pressable>
+
                 <View style={styles.qtyRow}>
                   <Pressable
                     disabled={busy || item.quantity <= 1}
@@ -199,9 +223,19 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
     paddingBottom: spacing.md,
   },
-  thumb: { width: 88, height: 110, backgroundColor: colors.imagePlaceholder },
+  thumbWrap: {
+    borderRadius: radius.md,
+    overflow: "hidden",
+  },
+  thumb: {
+    width: 88,
+    height: 110,
+    backgroundColor: colors.imagePlaceholder,
+    borderRadius: radius.md,
+  },
   placeholder: { backgroundColor: colors.imagePlaceholder },
   meta: { flex: 1, gap: 4 },
+  metaPressable: { gap: 4 },
   itemTitle: {
     fontFamily: typography.fontFamily.medium,
     fontSize: typography.size.md,
