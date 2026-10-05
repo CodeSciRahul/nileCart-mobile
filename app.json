@@ -6,16 +6,20 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "nilescart",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#FFBF00"
+      "backgroundColor": "#FAF8F4"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.nilescart.mobile",
+      "icon": {
+        "dark": "./assets/ios-icon-dark.png",
+        "light": "./assets/ios-icon-light.png"
+      },
       "infoPlist": {
         "CFBundleDisplayName": "Nilescart",
         "NSPhotoLibraryUsageDescription": "Allow Nilescart to access your photos to set your profile picture.",
@@ -24,7 +28,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#FFBF00",
+        "backgroundColor": "#161411",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -37,6 +41,19 @@
       "bundler": "metro"
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FAF8F4",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "dark": {
+            "image": "./assets/splash-icon-dark.png",
+            "backgroundColor": "#161411"
+          }
+        }
+      ],
       "expo-router",
       "expo-secure-store",
       "expo-font",

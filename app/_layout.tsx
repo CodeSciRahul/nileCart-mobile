@@ -18,6 +18,10 @@ import { ToastHost } from "@/components/ui/ToastHost";
 import { colors, typography } from "@/theme";
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
+SplashScreen.setOptions({
+  duration: 400,
+  fade: true,
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
