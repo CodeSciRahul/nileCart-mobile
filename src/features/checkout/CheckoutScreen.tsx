@@ -9,13 +9,9 @@ import {
 } from "react-native";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { CreditCard, Truck } from "lucide-react-native";
 import { queryKeys } from "@/constants/queryKeys";
 import {
-  createAddress,
   getAddresses,
   getPaymentConfig,
   placeOrder,
@@ -26,25 +22,11 @@ import { useCartQuery } from "@/hooks/useCart";
 import { useAuthStore } from "@/store/authStore";
 import { useUiStore } from "@/store/uiStore";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { EmptyState, ErrorState } from "@/components/ui/EmptyState";
+import { AddressBottomSheet } from "@/components/address/AddressBottomSheet";
 import { formatMoney } from "@/utils/format";
-import { colors, spacing, typography } from "@/theme";
+import { colors, radius, spacing, textStyles, typography } from "@/theme";
 
-const addressSchema = z.object({
-  fullName: z.string().min(2, "Full name is required"),
-  mobileNumber: z.string().regex(/^[0-9]{10}$/, "Enter valid mobile number"),
-  pincode: z.string().regex(/^[0-9]{6}$/, "Enter valid pincode"),
-  addressLine: z.string().min(5, "Address is required"),
-  locality: z.string().optional(),
-  city: z.string().min(2, "City is required"),
-  state: z.string().min(2, "State is required"),
-  country: z.string().min(2),
-  addressType: z.enum(["Home", "Work", "Other"]),
-  isDefault: z.boolean(),
-});
-
-type AddressForm = z.infer<typeof addressSchema>;
 type PaymentMethod = "cod" | "online";
 
 export function CheckoutScreen() {
@@ -53,7 +35,7 @@ export function CheckoutScreen() {
   const queryClient = useQueryClient();
   const cartQuery = useCartQuery();
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
   const submittingRef = useRef(false);
 
@@ -67,43 +49,6 @@ export function CheckoutScreen() {
     queryKey: queryKeys.payment.config,
     queryFn: getPaymentConfig,
     staleTime: 5 * 60 * 1000,
-  });
-
-  const {
-    control,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<AddressForm>({
-    resolver: zodResolver(addressSchema),
-    defaultValues: {
-      fullName: "",
-      mobileNumber: "",
-      pincode: "",
-      addressLine: "",
-      locality: "",
-      city: "",
-      state: "",
-      country: "Uganda",
-      addressType: "Home",
-      isDefault: true,
-    },
-  });
-
-  const createAddressMutation = useMutation({
-    mutationFn: createAddress,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.addresses });
-      setShowForm(false);
-      reset();
-      showToast("Address saved", "success");
-    },
-    onError: (error: unknown) => {
-      showToast(
-        error instanceof Error ? error.message : "Could not save address.",
-        "error"
-      );
-    },
   });
 
   const placeOrderMutation = useMutation({
@@ -200,7 +145,6 @@ export function CheckoutScreen() {
   const items = cartQuery.data?.cart?.items || [];
   const busy =
     placeOrderMutation.isPending ||
-    createAddressMutation.isPending ||
     onlineMutation.isPending;
 
   const validateCheckout = () => {
@@ -291,63 +235,49 @@ export function CheckoutScreen() {
             activeAddressId === address._id && styles.addressCardActive,
           ]}
         >
-          <Text style={styles.addressName}>{address.fullName}</Text>
+          <View style={styles.addressHeaderRow}>
+            <Text style={styles.addressName}>{address.fullName}</Text>
+            {address.addressType ? (
+              <View style={styles.typeBadge}>
+                <Text style={styles.typeBadgeText}>{address.addressType}</Text>
+              </View>
+            ) : null}
+            {address.isDefault ? (
+              <Text style={styles.defaultBadge}>Default</Text>
+            ) : null}
+          </View>
           <Text style={styles.addressBody}>
-            {address.addressLine}, {address.city}, {address.state}{" "}
-            {address.pincode}
+            {address.addressLine}
+            {address.locality ? `, ${address.locality}` : ""},{" "}
+            {address.city}, {address.state} {address.pincode}
           </Text>
-          <Text style={styles.addressBody}>{address.mobileNumber}</Text>
+          <Text style={styles.addressPhone}>Phone: {address.mobileNumber}</Text>
         </Pressable>
       ))}
 
-      <Button
-        title={showForm ? "Hide address form" : "Add new address"}
-        variant="secondary"
-        onPress={() => setShowForm((v) => !v)}
-      />
-
-      {showForm ? (
-        <View style={styles.form}>
-          {(
-            [
-              ["fullName", "Full name"],
-              ["mobileNumber", "Mobile number"],
-              ["pincode", "Pincode"],
-              ["addressLine", "Address"],
-              ["locality", "Locality (optional)"],
-              ["city", "City"],
-              ["state", "State"],
-              ["country", "Country"],
-            ] as const
-          ).map(([name, label]) => (
-            <Controller
-              key={name}
-              control={control}
-              name={name}
-              render={({ field: { onChange, value } }) => (
-                <Input
-                  label={label}
-                  value={value || ""}
-                  onChangeText={onChange}
-                  error={errors[name]?.message}
-                  keyboardType={
-                    name === "mobileNumber" || name === "pincode"
-                      ? "number-pad"
-                      : "default"
-                  }
-                />
-              )}
-            />
-          ))}
-          <Button
-            title="Save address"
-            loading={createAddressMutation.isPending}
-            onPress={handleSubmit((values) =>
-              createAddressMutation.mutate(values)
-            )}
-          />
+      {addresses.length === 0 ? (
+        <View style={styles.noAddressBox}>
+          <Text style={styles.noAddressText}>
+            No delivery address saved yet. Please add an address to continue.
+          </Text>
         </View>
       ) : null}
+
+      <Button
+        title="+ Add New Address"
+        variant="secondary"
+        onPress={() => setIsAddressModalOpen(true)}
+      />
+
+      <AddressBottomSheet
+        visible={isAddressModalOpen}
+        onClose={() => setIsAddressModalOpen(false)}
+        onSuccess={(address) => {
+          if (address?._id) {
+            setSelectedAddressId(address._id);
+          }
+        }}
+      />
 
       <Text style={styles.section}>Coupon</Text>
       <CouponInput
@@ -462,24 +392,77 @@ const styles = StyleSheet.create({
   addressCard: {
     borderWidth: 1,
     borderColor: colors.border,
+    borderRadius: radius.md,
     padding: spacing.md,
     gap: 4,
     backgroundColor: colors.brandWhite,
+    marginBottom: spacing.xs,
   },
   addressCardActive: {
     borderColor: colors.brandAmber,
     backgroundColor: colors.brandCream,
   },
+  addressHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    flexWrap: "wrap",
+    marginBottom: 2,
+  },
   addressName: {
     fontFamily: typography.fontFamily.bold,
+    fontSize: 14,
     color: colors.foreground,
+  },
+  typeBadge: {
+    borderWidth: 1,
+    borderColor: colors.amberBorder,
+    backgroundColor: colors.brandCream,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: radius.sm,
+  },
+  typeBadgeText: {
+    fontFamily: typography.fontFamily.semibold,
+    fontSize: 9,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+    color: colors.foreground,
+  },
+  defaultBadge: {
+    ...textStyles.badge,
+    fontSize: 9,
+    color: colors.foreground,
+    backgroundColor: colors.amberMuted,
   },
   addressBody: {
     fontFamily: typography.fontFamily.regular,
     color: colors.brandGray,
     fontSize: typography.size.sm,
+    lineHeight: 18,
   },
-  form: { gap: spacing.md },
+  addressPhone: {
+    fontFamily: typography.fontFamily.medium,
+    color: colors.brandGray,
+    fontSize: typography.size.xs,
+    marginTop: 2,
+  },
+  noAddressBox: {
+    padding: spacing.md,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: colors.amberBorder,
+    backgroundColor: "rgba(243, 239, 230, 0.4)",
+    borderRadius: radius.md,
+    alignItems: "center",
+    marginBottom: spacing.xs,
+  },
+  noAddressText: {
+    fontFamily: typography.fontFamily.regular,
+    fontSize: typography.size.xs,
+    color: colors.brandGray,
+    textAlign: "center",
+  },
   payMethod: {
     borderWidth: 1,
     borderColor: colors.border,

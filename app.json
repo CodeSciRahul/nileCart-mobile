@@ -23,7 +23,8 @@
       "infoPlist": {
         "CFBundleDisplayName": "Nilescart",
         "NSPhotoLibraryUsageDescription": "Allow Nilescart to access your photos to set your profile picture.",
-        "NSCameraUsageDescription": "Allow Nilescart to access your camera to take a profile picture."
+        "NSCameraUsageDescription": "Allow Nilescart to access your camera to take a profile picture.",
+        "NSLocationWhenInUseUsageDescription": "Allow Nilescart to access your location to automatically fill your delivery address."
       }
     },
     "android": {
@@ -34,7 +35,11 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "package": "com.nilescart.mobile",
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -64,6 +69,12 @@
         {
           "photosPermission": "Allow Nilescart to access your photos to set your profile picture.",
           "cameraPermission": "Allow Nilescart to access your camera to take a profile picture."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Nilescart to access your location to automatically fill your delivery address."
         }
       ]
     ],

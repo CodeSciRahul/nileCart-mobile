@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -13,7 +14,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Briefcase, Building2, Check, Home, MapPin, X } from "lucide-react-native";
+import * as Location from "expo-location";
+import { Briefcase, Building2, Check, Home, LocateFixed, MapPin, X } from "lucide-react-native";
 import { createAddress } from "@/services/checkoutService";
 import { queryKeys } from "@/constants/queryKeys";
 import { useUiStore } from "@/store/uiStore";
@@ -60,6 +62,7 @@ export function AddressBottomSheet({
   const [country, setCountry] = useState("Uganda");
   const [addressType, setAddressType] = useState<"Home" | "Work" | "Other">("Home");
   const [isDefault, setIsDefault] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
   const resetForm = () => {
@@ -73,7 +76,98 @@ export function AddressBottomSheet({
     setCountry("Uganda");
     setAddressType("Home");
     setIsDefault(false);
+    setIsLocating(false);
     setErrors({});
+  };
+
+  const handleDetectLocation = async () => {
+    if (isLocating) return;
+    setIsLocating(true);
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Location Permission Required",
+          "Please enable location permission in your device settings to auto-fill your delivery address.",
+          [{ text: "OK" }]
+        );
+        return;
+      }
+
+      let pos: Location.LocationObject | null = null;
+      try {
+        pos = await Promise.race([
+          Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Balanced,
+          }),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("Location request timed out")), 8000)
+          ),
+        ]);
+      } catch {
+        pos = await Location.getLastKnownPositionAsync();
+      }
+
+      if (!pos?.coords) {
+        showToast(
+          "Could not detect your current location. Please enter address manually.",
+          "error"
+        );
+        return;
+      }
+
+      const geocoded = await Location.reverseGeocodeAsync({
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+      });
+
+      if (!geocoded || geocoded.length === 0) {
+        showToast("No address details found for current location.", "error");
+        return;
+      }
+
+      const geo = geocoded[0];
+      if (!geo) {
+        showToast("No address details found for current location.", "error");
+        return;
+      }
+
+      const streetParts = [geo.streetNumber, geo.street].filter(Boolean).join(" ");
+      const resolvedAddressLine =
+        streetParts || geo.name || geo.district || "";
+      const resolvedLocality =
+        geo.district ||
+        (geo.name && geo.name !== geo.street ? geo.name : "") ||
+        "";
+      const resolvedCity = geo.city || geo.subregion || geo.district || "";
+      const resolvedState = geo.region || geo.subregion || "";
+      const resolvedPincode = geo.postalCode || "";
+      const resolvedCountry = geo.country || "Uganda";
+
+      if (resolvedAddressLine) setAddressLine(resolvedAddressLine);
+      if (resolvedLocality) setLocality(resolvedLocality);
+      if (resolvedCity) setCity(resolvedCity);
+      if (resolvedState) setState(resolvedState);
+      if (resolvedPincode) setPincode(resolvedPincode);
+      if (resolvedCountry) setCountry(resolvedCountry);
+
+      setErrors((prev) => {
+        const next = { ...prev };
+        if (resolvedAddressLine) delete next.addressLine;
+        if (resolvedCity) delete next.city;
+        if (resolvedState) delete next.state;
+        if (resolvedPincode) delete next.pincode;
+        return next;
+      });
+
+      showToast("Address populated from your location!", "success");
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error ? err.message : "Could not fetch current location.";
+      showToast(msg, "error");
+    } finally {
+      setIsLocating(false);
+    }
   };
 
   const validate = (): boolean => {
@@ -210,6 +304,42 @@ export function AddressBottomSheet({
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
             >
+              {/* Detect Location Button */}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Use current location"
+                disabled={isLocating}
+                onPress={handleDetectLocation}
+                style={({ pressed }) => [
+                  styles.detectLocationBtn,
+                  pressed && { opacity: 0.85 },
+                  isLocating && styles.detectLocationBtnLoading,
+                ]}
+              >
+                <View style={styles.detectLocationIconWrap}>
+                  {isLocating ? (
+                    <ActivityIndicator size="small" color={colors.brandInk} />
+                  ) : (
+                    <LocateFixed size={18} color={colors.brandInk} strokeWidth={2.2} />
+                  )}
+                </View>
+                <View style={styles.detectLocationTextWrap}>
+                  <Text style={styles.detectLocationTitle}>
+                    {isLocating ? "Detecting current location..." : "Use Current Location"}
+                  </Text>
+                  <Text style={styles.detectLocationSubtitle}>
+                    Auto-fill address, city, state & postal code
+                  </Text>
+                </View>
+              </Pressable>
+
+              {/* Divider */}
+              <View style={styles.orDivider}>
+                <View style={styles.orLine} />
+                <Text style={styles.orText}>OR ENTER MANUALLY</Text>
+                <View style={styles.orLine} />
+              </View>
+
               {/* Full Name */}
               <View style={styles.fieldGroup}>
                 <Text style={styles.label}>
@@ -578,11 +708,70 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(22, 20, 17, 0.05)",
   },
   formScroll: {
-    maxHeight: 460,
+    maxHeight: 520,
   },
   formContent: {
     padding: spacing.lg,
     gap: spacing.md,
+  },
+  detectLocationBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    backgroundColor: colors.brandAmber,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.amberBorder,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  detectLocationBtnLoading: {
+    opacity: 0.75,
+  },
+  detectLocationIconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: radius.full,
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  detectLocationTextWrap: {
+    flex: 1,
+  },
+  detectLocationTitle: {
+    fontFamily: typography.fontFamily.bold,
+    fontSize: 13,
+    color: colors.brandInk,
+  },
+  detectLocationSubtitle: {
+    fontFamily: typography.fontFamily.regular,
+    fontSize: 11,
+    color: colors.brandInk,
+    opacity: 0.85,
+    marginTop: 1,
+  },
+  orDivider: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginVertical: 2,
+  },
+  orLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.border,
+  },
+  orText: {
+    fontFamily: typography.fontFamily.semibold,
+    fontSize: 10,
+    color: colors.brandStone,
+    letterSpacing: 1,
   },
   fieldGroup: {
     gap: 5,
