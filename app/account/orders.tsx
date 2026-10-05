@@ -148,7 +148,7 @@ export default function OrdersRoute() {
       <EmptyState
         title="Sign in to view orders"
         actionLabel="Sign in"
-        onAction={() => router.push("/auth")}
+        onAction={() => router.push("/auth?redirect=%2Faccount%2Forders" as any)}
       />
     );
   }

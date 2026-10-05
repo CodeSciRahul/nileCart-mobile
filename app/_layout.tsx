@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useAuthStore } from "@/store/authStore";
+import { useDeepLinkHandler } from "@/hooks/useDeepLinkHandler";
 import { ToastHost } from "@/components/ui/ToastHost";
 import { colors, typography } from "@/theme";
 
@@ -36,6 +37,8 @@ function AuthBootstrap({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+  useDeepLinkHandler();
+
   const [fontsLoaded] = useFonts({
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
     "Poppins-Light": require("../assets/fonts/Poppins-Light.ttf"),

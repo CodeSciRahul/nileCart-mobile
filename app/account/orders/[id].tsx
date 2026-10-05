@@ -159,7 +159,11 @@ export default function OrderDetailRoute() {
       <EmptyState
         title="Sign in to view order"
         actionLabel="Sign in"
-        onAction={() => router.push("/auth")}
+        onAction={() =>
+          router.push(
+            `/auth?redirect=${encodeURIComponent(`/account/orders/${id}`)}` as any
+          )
+        }
       />
     );
   }

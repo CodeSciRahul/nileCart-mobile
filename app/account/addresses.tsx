@@ -77,7 +77,7 @@ export default function AddressesRoute() {
       <EmptyState
         title="Sign in to manage addresses"
         actionLabel="Sign in"
-        onAction={() => router.push("/auth")}
+        onAction={() => router.push("/auth?redirect=%2Faccount%2Faddresses" as any)}
       />
     );
   }

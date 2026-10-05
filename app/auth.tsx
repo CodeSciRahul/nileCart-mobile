@@ -1,9 +1,11 @@
 import { ScrollView, StyleSheet } from "react-native";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { AuthForm } from "@/features/auth/AuthForm";
 import { colors, spacing } from "@/theme";
 
 export default function AuthRoute() {
+  const { redirect } = useLocalSearchParams<{ redirect?: string }>();
+
   return (
     <ScrollView
       style={styles.screen}
@@ -12,8 +14,21 @@ export default function AuthRoute() {
     >
       <AuthForm
         onSuccess={() => {
-          if (router.canGoBack()) router.back();
-          else router.replace("/(tabs)");
+          if (redirect) {
+            try {
+              const target = decodeURIComponent(redirect);
+              router.replace(target as any);
+              return;
+            } catch {
+              router.replace(redirect as any);
+              return;
+            }
+          }
+          if (router.canGoBack()) {
+            router.back();
+          } else {
+            router.replace("/(tabs)");
+          }
         }}
       />
     </ScrollView>

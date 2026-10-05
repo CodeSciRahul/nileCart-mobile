@@ -25,7 +25,11 @@
         "NSPhotoLibraryUsageDescription": "Allow Nilescart to access your photos to set your profile picture.",
         "NSCameraUsageDescription": "Allow Nilescart to access your camera to take a profile picture.",
         "NSLocationWhenInUseUsageDescription": "Allow Nilescart to access your location to automatically fill your delivery address."
-      }
+      },
+      "associatedDomains": [
+        "applinks:nilescart.com",
+        "applinks:www.nilescart.com"
+      ]
     },
     "android": {
       "adaptiveIcon": {
@@ -39,6 +43,28 @@
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "nilescart.com",
+              "pathPrefix": "/product"
+            },
+            {
+              "scheme": "https",
+              "host": "www.nilescart.com",
+              "pathPrefix": "/product"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
       ]
     },
     "web": {
@@ -59,7 +85,12 @@
           }
         }
       ],
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "origin": "https://nilescart.com"
+        }
+      ],
       "expo-secure-store",
       "expo-font",
       "expo-image",
@@ -82,7 +113,9 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {}
+      "router": {
+        "origin": "https://nilescart.com"
+      }
     }
   }
 }

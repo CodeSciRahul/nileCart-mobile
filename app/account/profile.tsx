@@ -70,7 +70,7 @@ export default function ProfileRoute() {
       <EmptyState
         title="Sign in to view profile"
         actionLabel="Sign in"
-        onAction={() => router.push("/auth")}
+        onAction={() => router.push("/auth?redirect=%2Faccount%2Fprofile" as any)}
       />
     );
   }
