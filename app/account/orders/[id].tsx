@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
   View,
+  KeyboardAvoidingView
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, router } from "expo-router";
@@ -187,10 +188,12 @@ export default function OrderDetailRoute() {
 
   return (
     <View style={styles.screen}>
+      <KeyboardAvoidingView style={styles.screen} behavior="padding">
+
       <ScrollView
         contentContainerStyle={[
           styles.content,
-          { paddingBottom: Math.max(insets.bottom, spacing.lg) + 80 },
+          { paddingBottom: Math.max(insets.bottom, spacing.lg) + 180 },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -460,6 +463,7 @@ export default function OrderDetailRoute() {
           </View>
         ) : null}
       </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
